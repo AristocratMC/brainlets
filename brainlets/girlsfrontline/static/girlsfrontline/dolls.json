@@ -6837,7 +6837,7 @@
   {
     "id": 100,
     "id_index": 105,
-    "aliases": ["OTs-12 Tiss"],
+    "aliases": ["Obrazets TsKIB-12 Tiss"],
     "api_name": "ots12",
     "spritesheet_row": 20,
     "spritesheet_col": 3,
@@ -7825,7 +7825,7 @@
   {
     "id": 114,
     "id_index": 119,
-    "aliases": ["OTs-14 Groza"],
+    "aliases": ["Obrazets TsKIB-14 Groza"],
     "api_name": "ots14",
     "spritesheet_row": 34,
     "spritesheet_col": 3,
@@ -9582,7 +9582,7 @@
   {
     "id": 140,
     "id_index": 145,
-    "aliases": ["OTs-44"],
+    "aliases": ["Obrazets TsKIB-44"],
     "api_name": "oc44",
     "spritesheet_row": 20,
     "spritesheet_col": 4,
@@ -13935,7 +13935,7 @@
   {
     "id": 204,
     "id_index": 209,
-    "aliases": ["OTs-39"],
+    "aliases": ["Obrazets TsKIB-39"],
     "api_name": "ots39",
     "spritesheet_row": 4,
     "spritesheet_col": 6,
