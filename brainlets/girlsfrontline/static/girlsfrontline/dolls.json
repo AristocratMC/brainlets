@@ -14754,7 +14754,7 @@
     "growth_rating": 132,
     "construct_time": 15600,
     "en_craftable": false,
-		"en_released":false,
+		"en_released": true,
     "artist": "洲川Terras",
     "voice": "Aimi",
     "name_skill1": "Maple and Firefly",
