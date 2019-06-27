@@ -1,4 +1,5 @@
 import damageUtils from './damage-utils.js';
+import dollUtils from './doll-utils.js';
 
 var echelon;
 var fairy;
@@ -35,48 +36,6 @@ const VALID_EQUIPS = [[[4, 13], [6], [10, 12]], //hg
 [[1, 2, 3, 4, 13], [8], [10, 12]],//ar
 [[5], [1, 2, 3], [14]],//mg
 [[11], [7, 9], [1, 2, 3, 4]]]; //sg
-
-const TYPE_SCALARS = [{ hp: 0.6, fp: 0.6, rof: 0.8, acc: 1.2, eva: 1.8, armor: 0 }, //hg
-{ hp: 1.6, fp: 0.6, rof: 1.2, acc: 0.3, eva: 1.6, armor: 0 }, //smg
-{ hp: 0.8, fp: 2.4, rof: 0.5, acc: 1.6, eva: 0.8, armor: 0 }, //rf
-{ hp: 1, fp: 1, rof: 1, acc: 1, eva: 1, armor: 0 },   //ar
-{ hp: 1.5, fp: 1.8, rof: 1.6, acc: 0.6, eva: 0.6, armor: 0 }, //mg
-{ hp: 2.0, fp: 0.7, rof: 0.4, acc: 0.3, eva: 0.3, armor: 1 }]; //sg
-
-const GROWTH_FACTORS = {
-  mod: {
-    basic: {
-      hp: [96.283, 0.138],
-      armor: [13.979, 0.04],
-      eva: [5],
-      acc: [5],
-      fp: [16],
-      rof: [45],
-    },
-    grow: {
-      eva: [0.075, 22.572],
-      acc: [0.075, 22.572],
-      fp: [0.06, 18.018],
-      rof: [0.022, 15.741]
-    }
-  },
-  normal: {
-    basic: {
-      hp: [55, 0.555],
-      armor: [2, 0.161],
-      eva: [5],
-      acc: [5],
-      fp: [16],
-      rof: [45],
-    },
-    grow: {
-      eva: [0.303, 0],
-      acc: [0.303, 0],
-      fp: [0.242, 0],
-      rof: [0.181, 0]
-    }
-  }
-};
 
 const FAIRY_GROWTH_FACTORS = {
   basic: {
@@ -544,32 +503,7 @@ function initDollSelectModal() {
 
     // Calculate max level stats
     let level = doll.mod ? 120 : 100;
-    let dolldummy = {};
-    let dollTypeScalars = TYPE_SCALARS[doll.type - 1];
-
-    let basicFactors = level > 100 ? GROWTH_FACTORS.mod.basic : GROWTH_FACTORS.normal.basic;
-    let growFactors = level > 100 ? GROWTH_FACTORS.mod.grow : GROWTH_FACTORS.normal.grow;
-
-    dolldummy.hp = Math.ceil((basicFactors.hp[0] + ((level - 1) * basicFactors.hp[1])) * dollTypeScalars.hp * doll.hp / 100);
-
-    dolldummy.fp = Math.ceil(basicFactors.fp[0] * dollTypeScalars.fp * doll.fp / 100);
-    dolldummy.fp += Math.ceil((growFactors.fp[1] + ((level - 1) * growFactors.fp[0])) * dollTypeScalars.fp * doll.fp * doll.growth_rating / 100 / 100);
-
-    dolldummy.acc = Math.ceil(basicFactors.acc[0] * dollTypeScalars.acc * doll.acc / 100);
-    dolldummy.acc += Math.ceil((growFactors.acc[1] + ((level - 1) * growFactors.acc[0])) * dollTypeScalars.acc * doll.acc * doll.growth_rating / 100 / 100);
-
-    dolldummy.eva = Math.ceil(basicFactors.eva[0] * dollTypeScalars.eva * doll.eva / 100);
-    dolldummy.eva += Math.ceil((growFactors.eva[1] + ((level - 1) * growFactors.eva[0])) * dollTypeScalars.eva * doll.eva * doll.growth_rating / 100 / 100);
-
-    dolldummy.rof = Math.ceil(basicFactors.rof[0] * dollTypeScalars.rof * doll.rof / 100);
-    dolldummy.rof += Math.ceil((growFactors.rof[1] + ((level - 1) * growFactors.rof[0])) * dollTypeScalars.rof * doll.rof * doll.growth_rating / 100 / 100);
-
-    dolldummy.armor = Math.ceil((basicFactors.armor[0] + ((level - 1) * basicFactors.armor[1])) * dollTypeScalars.armor * doll.armor / 100);
-
-    dolldummy.crit = doll.crit;
-    dolldummy.critdmg = doll.critdmg;
-    dolldummy.ap = doll.ap;
-    dolldummy.rounds = doll.rounds;
+    let dolldummy = dollUtils.getStatsAtLevel(doll, level);
 
     // Add hover
 
@@ -2316,31 +2250,8 @@ function calculateBaseStats(dollIndex) {
   var doll = echelon[dollIndex];
   var data = dollData[doll.id - 1];
   var level = parseInt($('#doll' + (dollIndex + 1) + ' .doll-level-select').val());
-  var dollTypeScalars = TYPE_SCALARS[doll.type - 1];
 
-  var basicFactors = level > 100 ? GROWTH_FACTORS.mod.basic : GROWTH_FACTORS.normal.basic;
-  var growFactors = level > 100 ? GROWTH_FACTORS.mod.grow : GROWTH_FACTORS.normal.grow;
-
-  doll.base.hp = Math.ceil((basicFactors.hp[0] + ((level - 1) * basicFactors.hp[1])) * dollTypeScalars.hp * data.hp / 100);
-
-  doll.base.fp = Math.ceil(basicFactors.fp[0] * dollTypeScalars.fp * data.fp / 100);
-  doll.base.fp += Math.ceil((growFactors.fp[1] + ((level - 1) * growFactors.fp[0])) * dollTypeScalars.fp * data.fp * data.growth_rating / 100 / 100);
-
-  doll.base.acc = Math.ceil(basicFactors.acc[0] * dollTypeScalars.acc * data.acc / 100);
-  doll.base.acc += Math.ceil((growFactors.acc[1] + ((level - 1) * growFactors.acc[0])) * dollTypeScalars.acc * data.acc * data.growth_rating / 100 / 100);
-
-  doll.base.eva = Math.ceil(basicFactors.eva[0] * dollTypeScalars.eva * data.eva / 100);
-  doll.base.eva += Math.ceil((growFactors.eva[1] + ((level - 1) * growFactors.eva[0])) * dollTypeScalars.eva * data.eva * data.growth_rating / 100 / 100);
-
-  doll.base.rof = Math.ceil(basicFactors.rof[0] * dollTypeScalars.rof * data.rof / 100);
-  doll.base.rof += Math.ceil((growFactors.rof[1] + ((level - 1) * growFactors.rof[0])) * dollTypeScalars.rof * data.rof * data.growth_rating / 100 / 100);
-
-  doll.base.armor = Math.ceil((basicFactors.armor[0] + ((level - 1) * basicFactors.armor[1])) * dollTypeScalars.armor * data.armor / 100);
-
-  doll.base.crit = data.crit;
-  doll.base.critdmg = data.critdmg;
-  doll.base.ap = data.ap;
-  doll.base.rounds = data.rounds;
+  doll.base = dollUtils.getStatsAtLevel(data, level);
 }
 
 function calculatePreBattleStatsForDoll(dollIndex) {
