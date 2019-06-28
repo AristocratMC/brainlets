@@ -1,5 +1,6 @@
 import damageUtils from './damage-utils.js';
-import dollUtils, { dollData, dollDataMap } from './doll-utils.js';
+import dollUtils, { dollData, dollDataMap, VALID_EQUIPS, SPECIAL_VALID_EQUIPS } from './doll-utils.js';
+import uiUtils from './ui-utils.js';
 
 var echelon;
 var fairy;
@@ -28,13 +29,6 @@ let buttonsWithOpenTooltips = [], mousedOverTooltip = null;
 let selectModalInitialized = false;   // Set to true after doll select modal initialized
 let allowDollSelectTooltip = false;   // Bugfix for mouseover tooltips
 
-const VALID_EQUIPS = [[[4, 13], [6], [10, 12]], //hg
-[[10, 12], [6], [1, 2, 3, 4, 13]],//smg
-[[5], [1, 2, 3, 13], [15]],//rf
-[[1, 2, 3, 4, 13], [8], [10, 12]],//ar
-[[5], [1, 2, 3], [14]],//mg
-[[11], [7, 9], [1, 2, 3, 4]]]; //sg
-
 const FAIRY_GROWTH_FACTORS = {
   basic: {
     fp: 7,
@@ -53,74 +47,6 @@ const FAIRY_GROWTH_FACTORS = {
 };
 
 const FAIRY_RARITY_SCALARS = [0.4, 0.5, 0.6, 0.8, 1];
-
-const SPECIAL_VALID_EQUIPS = { //numbers indicate TYPE of the equipment
-  133: [-1, 5, -1], //6P62
-  208: [-1, 5, -1], //C-MS
-  178: [-1, 5, -1],  //Contender
-  72: [-1, -1, 18], //M1918
-  264: [-1, 39, 18], //M1918
-  35: [16, -1, -1], //Springfield
-  26: [19, -1, -1], //MP5
-  56: [[20, 21, 22], -1, -1], //AK-47
-  64: [[20, 21, 22], -1, -1], //Type56-1
-  96: [25, -1, -1], //UMP9
-  97: [25, -1, -1], //UMP40
-  98: [25, -1, -1], //UMP45
-  270: [25, -1, 49], //UMP45 mod3
-  113: [26, -1, -1], //9A-91
-  180: [-1, -1, 27], //Ameli
-  259: [-1, -1, 28], //M4A1 mod3
-  252: [-1, 30, -1], //M1911 mod3
-  268: [31, -1, -1], //IDW mod3
-  269: [-1, -1, 32], //Type64 mod3
-  258: [-1, 33, -1], //FN-49 mod3
-  44: [-1, 34, -1], //Kar98k
-  63: [35, -1, -1], //416
-  83: [-1, -1, 36], //MG3
-  41: [-1, -1, 37], //PTRD
-  256: [-1, 38, 23], //Mosin-Nagant mod3
-  38: [-1, -1, 23], //Mosin-Nagant
-  253: [40, -1, -1], //M1895 mod3
-  267: [41, -1, -1], //MP446 mod3
-  257: [-1, -1, 42], //SV-98 mod3
-  249: [43, -1, -1], //CLEAR
-  250: [44, -1, -1], //FAIL
-  66: [45, -1, -1], //FAMAS
-  251: [46, -1, -1], //SAA mod3
-  266: [-1, 47, -1], //Bren mod3
-  262: [48, -1, -1], //G3 mod3
-  60: [-1, -1, 51], //G41
-  254: [-1, -1, 52], //STEN mod3
-  255: [-1, 53, -1], //M14 mod3
-  263: [54, -1, -1], //G36 mod3
-  265: [-1, 55, -1], //LWMMG mod3
-  120: [-1, 56, -1], //MG4
-  7: [57, -1, -1], //Stechkin
-  289: [-1, 58, -1], //AS Val mod3
-  290: [-1, 59, -1], //StG44 mod3
-  291: [-1, -1, 60], //Micro Uzi mod3
-  296: [[61, 64, 65], [62, 63, 66], [68, 67]], //Jill
-  292: [69, -1, -1], //Dana
-  294: [-1, -1, 70], //Stella
-  295: [-1, -1, 71], //Sei
-  297: [-1, 72, -1], //Dorothy
-  293: [-1, -1, 73], //Alma
-};
-
-let getPreference = function (preferenceName, defaultValue = true) {
-  let flag = localStorage.getItem(`preference-${preferenceName}`);
-  if (flag == undefined) {
-    // Default to true
-    return defaultValue;
-  } else {
-    return JSON.parse(flag);
-  }
-}
-
-let setPreference = function (preferenceName, value) {
-  localStorage.setItem(`preference-${preferenceName}`, value);
-}
 
 $(function () {
   $.ajax({
@@ -191,9 +117,9 @@ $(function () {
   $('#load-btn').click(selectTeam);
 
   // Load user preferences
-  isViewFancyPreference = getPreference('view-fancy', true);
-  isTooltipClickablePreference = getPreference('tooltip-clickable', false);
-  isEnOnlyPreference = getPreference('en-only', false);
+  isViewFancyPreference = uiUtils.getPreference('view-fancy', true);
+  isTooltipClickablePreference = uiUtils.getPreference('tooltip-clickable', false);
+  isEnOnlyPreference = uiUtils.getPreference('en-only', false);
 
   savedTeamCount = localStorage.getItem('savedTeamCount') !== null ? localStorage.savedTeamCount : 0;
   savedTeamList = [];
@@ -478,7 +404,7 @@ function initDollSelectModal() {
   filterEnOnly.prop('checked', false);
   filterEnOnly.change(function () {
     isEnOnlyPreference = this.checked;
-    setPreference('en-only', isEnOnlyPreference);
+    uiUtils.setPreference('en-only', isEnOnlyPreference);
     refilterVisibleButtons();
   });
 
@@ -496,7 +422,7 @@ function initDollSelectModal() {
   let fancyViewSwitch = $('.switch-small.toggle_fancy_view input');
   fancyViewSwitch.change(function () {
     isViewFancyPreference = this.checked;
-    setPreference('view-fancy', isViewFancyPreference);
+    uiUtils.setPreference('view-fancy', isViewFancyPreference);
     filterVisibleButtons();
     refilterVisibleButtons();
     changeDollSelectFilter(); // Handle user toggling view while search string not empty
@@ -509,7 +435,7 @@ function initDollSelectModal() {
   let clickableTooltipSwitch = $('.switch-small.toggle_clickable_tooltip input');
   clickableTooltipSwitch.change(function () {
     isTooltipClickablePreference = this.checked;
-    setPreference('tooltip-clickable', isTooltipClickablePreference);
+    uiUtils.setPreference('tooltip-clickable', isTooltipClickablePreference);
     hideOpenTooltips();
   });
 
@@ -556,7 +482,7 @@ function initDollSelectModal() {
     }).on('mouseleave', function () {
       // .setTimeout needed because tooltip mouseenter fires after button mouseleave
       let _this = this;
-      isTooltipClickablePreference = getPreference('tooltip-clickable', false);
+      isTooltipClickablePreference = uiUtils.getPreference('tooltip-clickable', false);
       if (isTooltipClickablePreference) {
         window.setTimeout(function () {
           if ($('.tooltip').length == 1 && !$('.tooltip').is($(mousedOverTooltip))) {
