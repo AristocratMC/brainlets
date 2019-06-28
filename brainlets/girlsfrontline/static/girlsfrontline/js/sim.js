@@ -1,13 +1,11 @@
 import damageUtils from './damage-utils.js';
-import dollUtils from './doll-utils.js';
+import dollUtils, { dollData, dollDataMap } from './doll-utils.js';
 
 var echelon;
 var fairy;
 var isNight;
 var isBoss;
 var equipData;
-var dollData;
-let dollDataMap;                // Mapping of ID to T-Doll data, preferred over dollData[doll.id - 1]
 var fairyData;
 var talentData;
 var enemyEva;
@@ -55,114 +53,6 @@ const FAIRY_GROWTH_FACTORS = {
 };
 
 const FAIRY_RARITY_SCALARS = [0.4, 0.5, 0.6, 0.8, 1];
-
-// NEED TO DEPRECATE SOON! USE API NAME MOVING FORWARD
-function getTDollIdFromName(name) {
-  let match = dollData.find(obj => {
-    return obj.name == name
-  })
-  return match.id
-}
-
-const LIST_DPS_SMG = [
-  "Vector",
-  "MP40",
-  "SR-3MP",
-  "KLIN",
-  "Skorpion",
-  "Micro Uzi",
-  "Z-62",
-  "M12",
-  "PPSh-41",
-  "PPS-43",
-  "PP-2000",
-  "STEN MkⅡ", // lol
-  "EVO 3",
-  "PP-19",
-  "StenMKIIMod",
-  "M3",
-  "SCW",
-  "X95",
-  "Honey Badger",
-  "PM-9",
-  "Micro UziMod"
-];
-let LIST_DPS_SMG_ID;
-
-const SPECIAL_DEFAULT_EQUIPS = { //numbers indicate ID of the equipment
-  52: [24, 66, 28], //M16
-  54: [4, 8, 24], //SOP
-  260: [4, 92, 24], //SOP mod3
-  55: [4, 8, 59], //STAR
-  261: [4, 71, 59], //STAR mod3
-  72: [20, 8, 60], //M1918
-  264: [20, 81, 60], // M1918 mod3
-  35: [58, 4, 57], //Springfield
-  26: [61, 45, 39], //MP5
-  56: [62, 24, 35], //AK-47
-  64: [62, 24, 35], //Type56-1
-  96: [67, 45, 39], //UMP9
-  97: [67, 45, 39], //UMP40
-  98: [67, 45, 39], //UMP45
-  270: [67, 45, 91], //UMP45 mod3
-  180: [20, 4, 69], //Ameli
-  259: [4, 24, 70], //M4A1 mod3
-  252: [39, 72, 35], //M1911 mod3
-  268: [73, 45, 39], //IDW mod3
-  269: [28, 45, 74], //Type64 mod3
-  258: [20, 75, 57], //FN-49 mod3
-  41: [20, 4, 79], //PTRD
-  256: [20, 80, 65], //Mosin-Nagant mod3
-  38: [20, 4, 65], //Mosin-Nagant
-  253: [82, 45, 35], //M1895 mod3
-  267: [83, 45, 35], //MP446 mod3
-  257: [20, 4, 84], //SV-98 mod3
-  249: [85, 45, 35], //CLEAR
-  250: [86, 45, 35], //FAIL
-  251: [88, 45, 35], //SAA mod3
-  266: [20, 89, 41], //Bren mod3
-  262: [90, 24, 35], //G3 mod3
-  254: [28, 45, 94], //STEN mod3
-  255: [20, 95, 57], //M14 mod3
-  263: [96, 24, 35], //G36 mod3
-  265: [20, 97, 41], //LWMMG mod3
-  289: [4, 100, 35], //AS Val mod3
-  290: [4, 101, 35], //StG44 mod3
-  //her molotov is better with EOT instead of her unique equip 291: [35, 45, 102], //Micro Uzi mod3
-  292: [111, 49, 12], //Dana
-  294: [20, 4, 112], //Stella
-  295: [39, 45, 113], //Sei
-  296: [107, 108, 109], //Jill
-  297: [28, 114, 39], //Dorothy
-  293: [20, 8, 115], //Alma
-};
-
-const SPECIAL_DEFAULT_EQUIPS_UNRELEASED = {
-  44:[20,76,57],  //Kar98k
-  63:[77,24,35],  //416
-  83:[20,8,78],   //MG3
-  66:[87,24,35],  //FAMAS
-  60:[4,24,93],   //G41
-  120:[20,98,41], //MG4
-  7:[99,45,35],   //Stechkin
-}
-
-// Night equips, mostly to give ARs PEQs instead of special equipment
-const SPECIAL_DEFAULT_EQUIPS_NIGHT = { //numbers indicate ID of the equipment
-  54: [4, 16, 24], //SOP
-  55: [4, 16, 59], //STAR
-  56: [16, 24, 35], //AK-47
-  259: [16, 24, 70], //M4A1 mod3
-  260: [4, 16, 24], //SOP mod3
-  261: [4, 16, 59], //STAR mod3
-  262: [90, 24, 35], //G3 mod3
-  263: [16, 24, 35], //G36 mod3
-  289: [16, 100, 35], //AS Val mod3
-  290: [16, 101, 35], //StG44 mod3
-}
-
-const SPECIAL_DEFAULT_EQUIPS_NIGHT_UNRELEASED = { //numbers indicate ID of the equipment
-}
 
 const SPECIAL_VALID_EQUIPS = { //numbers indicate TYPE of the equipment
   133: [-1, 5, -1], //6P62
@@ -218,7 +108,7 @@ const SPECIAL_VALID_EQUIPS = { //numbers indicate TYPE of the equipment
   293: [-1, -1, 73], //Alma
 };
 
-let getPreference = function(preferenceName, defaultValue=true) {
+let getPreference = function (preferenceName, defaultValue = true) {
   let flag = localStorage.getItem(`preference-${preferenceName}`);
   if (flag == undefined) {
     // Default to true
@@ -228,7 +118,7 @@ let getPreference = function(preferenceName, defaultValue=true) {
   }
 }
 
-let setPreference = function(preferenceName, value) {
+let setPreference = function (preferenceName, value) {
   localStorage.setItem(`preference-${preferenceName}`, value);
 }
 
@@ -246,26 +136,8 @@ $(function () {
     }
   });
 
-  $.ajax({
-    async: false,
-    dataType: 'json',
-    url: '/static/girlsfrontline/dolls.json',
-    success: function (data, status, xhr) {
-      dollData = data;
-      // map T-Doll data to dollDataMap by ID
-      dollDataMap = dollData.reduce(function (map, doll) {
-        map[doll.id] = doll;
-        return map;
-      }, {});
-      // Populate DPS SMG List
-      LIST_DPS_SMG_ID = LIST_DPS_SMG.reduce((map, name) => (map[getTDollIdFromName(name)] = name, map), {})
-    },
-    error: function (xhr, status, err) {
-      console.log(status);
-      console.log(err);
-    }
-  });
-
+  dollUtils.init();
+  
   $.ajax({
     async: false,
     dataType: 'json',
@@ -662,11 +534,11 @@ function initDollSelectModal() {
       buttonsWithOpenTooltips.push(this);
 
       $(this).tooltip('show');
-      $('.img-tooltip-chibi').on('click', function() {
-         $(`button[data-id="${$(this).data('id')}"]:visible`).click();
-      }).hover(function() {
+      $('.img-tooltip-chibi').on('click', function () {
+        $(`button[data-id="${$(this).data('id')}"]:visible`).click();
+      }).hover(function () {
         $('.chibi-plus-circle').addClass('chibi-plus-circle-hover');
-      }, function() {
+      }, function () {
         $('.chibi-plus-circle').removeClass('chibi-plus-circle-hover');
       });
       $('.tooltip')
@@ -681,20 +553,20 @@ function initDollSelectModal() {
           // Hide this tooltip when user clicks it
           hideOpenTooltips();
         });
-      }).on('mouseleave', function () {
-        // .setTimeout needed because tooltip mouseenter fires after button mouseleave
-        let _this = this;
-        isTooltipClickablePreference = getPreference('tooltip-clickable', false);
-        if (isTooltipClickablePreference) {
-          window.setTimeout(function () {
-            if ($('.tooltip').length == 1 && !$('.tooltip').is($(mousedOverTooltip))) {
-              $(_this).tooltip('hide');
-            }
-          }, 100);
-        } else {
-          $(_this).tooltip('hide');
-        }
-      });
+    }).on('mouseleave', function () {
+      // .setTimeout needed because tooltip mouseenter fires after button mouseleave
+      let _this = this;
+      isTooltipClickablePreference = getPreference('tooltip-clickable', false);
+      if (isTooltipClickablePreference) {
+        window.setTimeout(function () {
+          if ($('.tooltip').length == 1 && !$('.tooltip').is($(mousedOverTooltip))) {
+            $(_this).tooltip('hide');
+          }
+        }, 100);
+      } else {
+        $(_this).tooltip('hide');
+      }
+    });
 
   // Hide buttons not matching user setting
   filterVisibleButtons();
@@ -1650,65 +1522,7 @@ function setDefaultEquips(dollIndex) {
   $('#doll' + (dollIndex + 1) + ' .equip2-level-select').val(10);
   $('#doll' + (dollIndex + 1) + ' .equip3-level-select').val(10);
 
-  switch (doll.type) {
-    case 1: //hg
-      doll.equip1 = 39; //suppressor
-      doll.equip2 = 45; //hp ammo
-      doll.equip3 = 35; //X-exo
-      if (isNight) {
-        doll.equip1 = 16; //PEQ
-      }
-      break;
-    case 2: //smg
-      doll.equip1 = doll.id in LIST_DPS_SMG_ID ? 35 : 28;
-      //T-exo, or X-exo if considered DPS
-      doll.equip2 = 45; //hp ammo
-      doll.equip3 = doll.id in LIST_DPS_SMG_ID ? 8 : 39;
-      //Suppressor, or EOT if considered DPS
-      break;
-    case 3: //rf
-      doll.equip1 = 20; //ap ammo
-      doll.equip2 = 4;  //scope
-      doll.equip3 = 57; //cape
-      break;
-    case 4: //ar
-      doll.equip1 = 4;  //scope
-      doll.equip2 = 24; //hv ammo
-      doll.equip3 = 35; //X-exo
-      if (isNight) {
-        doll.equip1 = 16; //PEQ
-      }
-      break;
-    case 5: //mg
-      doll.equip1 = 20; //ap ammo
-      doll.equip2 = 4;  //scope
-      doll.equip3 = 41; //ammo box
-      break;
-    case 6: //sg
-      doll.equip1 = 31; //armor
-      doll.equip2 = 49; //buckshot
-      doll.equip3 = 12; //red dot sight
-      if (isNight) {
-        doll.equip3 = 16; //PEQ
-      }
-      break;
-  }
-
-  if (doll.id in SPECIAL_DEFAULT_EQUIPS) {
-    if (isNight && (doll.id in SPECIAL_DEFAULT_EQUIPS_NIGHT)) {
-      doll.equip1 = SPECIAL_DEFAULT_EQUIPS_NIGHT[doll.id][0];
-      doll.equip2 = SPECIAL_DEFAULT_EQUIPS_NIGHT[doll.id][1];
-      doll.equip3 = SPECIAL_DEFAULT_EQUIPS_NIGHT[doll.id][2];
-    } else {
-      doll.equip1 = SPECIAL_DEFAULT_EQUIPS[doll.id][0];
-      doll.equip2 = SPECIAL_DEFAULT_EQUIPS[doll.id][1];
-      doll.equip3 = SPECIAL_DEFAULT_EQUIPS[doll.id][2];
-    }
-  } else if (!isEnOnlyPreference && doll.id in SPECIAL_DEFAULT_EQUIPS_UNRELEASED) {
-    doll.equip1 = SPECIAL_DEFAULT_EQUIPS_UNRELEASED[doll.id][0];
-    doll.equip2 = SPECIAL_DEFAULT_EQUIPS_UNRELEASED[doll.id][1];
-    doll.equip3 = SPECIAL_DEFAULT_EQUIPS_UNRELEASED[doll.id][2];
-  }
+  dollUtils.setDefaultEquips(doll, isNight, !isEnOnlyPreference);
 }
 
 function changeSkillLevel(event) {
@@ -2762,7 +2576,7 @@ function preBattleSkillChanges(doll) {
 
   //stg44 mod3
   if (doll.id == 290) {
-    var grenadeDamageBonus = [1.10,1.11,1.12,1.13,1.14,1.16,1.17,1.18,1.19,1.20];
+    var grenadeDamageBonus = [1.10, 1.11, 1.12, 1.13, 1.14, 1.16, 1.17, 1.18, 1.19, 1.20];
     doll.battle.skill.effects[0].multiplier[doll.skilllevel - 1] *= grenadeDamageBonus[doll.skill2level - 1];
     doll.battle.skill.effects[1].multiplier[doll.skilllevel - 1] *= grenadeDamageBonus[doll.skill2level - 1];
     doll.battle.skill.effects[2].multiplier[doll.skilllevel - 1] *= grenadeDamageBonus[doll.skill2level - 1];
@@ -2777,10 +2591,10 @@ function preBattleSkillChanges(doll) {
   if (doll.id == 292) {
     doll.battle.targets = 1;
     let normalAttack = {
-      type:"buff",
-      name:"normalAttackBuff",
+      type: "buff",
+      name: "normalAttackBuff",
       duration: -1,
-      multiplier:[1.2,1.27,1.33,1.4,1.47,1.53,1.6,1.67,1.73,1.8],
+      multiplier: [1.2, 1.27, 1.33, 1.4, 1.47, 1.53, 1.6, 1.67, 1.73, 1.8],
       level: doll.skilllevel
     };
     doll.battle.buffs.push($.extend(true, {}, normalAttack));
@@ -2801,13 +2615,13 @@ function preBattleSkillChanges(doll) {
 
     let cooldownBonus = doll.battle.fp > 30 ? 30 : doll.battle.fp;
     let skillcdBuff = {
-      type:"buff",
-      target:"self",
-      level:doll.skilllevel,
-      stat:{
-        skillcd:cooldownBonus
+      type: "buff",
+      target: "self",
+      level: doll.skilllevel,
+      stat: {
+        skillcd: cooldownBonus
       },
-      duration:-1
+      duration: -1
     };
     doll.battle.buffs.push(skillcdBuff);
 
@@ -3028,16 +2842,16 @@ function simulateBattle() {
       }
       if (fairy.talent.id == 17) { //fervor
         let initialFervorStack = {
-          type:"buff",
-          target:"all",
-          stat:{
-            fp:10
+          type: "buff",
+          target: "all",
+          stat: {
+            fp: 10
           },
-          duration:-1,
-          name:"fairytalent",
-          stackable:true,
-          stacks:1,
-          max_stacks:3
+          duration: -1,
+          name: "fairytalent",
+          stackable: true,
+          stacks: 1,
+          max_stacks: 3
         }
         activateBuff(fairy, initialFervorStack, enemy);
       }
@@ -3377,7 +3191,7 @@ function simulateBattle() {
             }
             if (canCrit) {
               let critdmg = doll.battle.critdmg;
-              if('extraCritDamage' in attackBuff) {
+              if ('extraCritDamage' in attackBuff) {
                 critdmg += $.isArray(attackBuff.extraCritDamage) ? attackBuff.extraCritDamage[attackBuff.level - 1] : attackBuff.extraCritDamage;
               }
               dmg *= sureCrit ? (1 + (critdmg / 100)) : (1 + critdmg / 100) * (doll.battle.crit / 100) + (1 - doll.battle.crit / 100);
@@ -4014,12 +3828,12 @@ function calculateBattleStats(dollIndex) {
   doll.battle.ap = Math.max(0, doll.battle.ap);
   doll.battle.armor = Math.max(0, doll.battle.armor);
   doll.battle.acc = Math.max(1, doll.battle.acc);
-  if(doll.type == 6) { //sg
-    doll.battle.rof = Math.min(60, Math.max(15,doll.battle.rof));
-  } else if(doll.type == 5) { //mg
-    doll.battle.rof = Math.min(1000, Math.max(1,doll.battle.rof));
+  if (doll.type == 6) { //sg
+    doll.battle.rof = Math.min(60, Math.max(15, doll.battle.rof));
+  } else if (doll.type == 5) { //mg
+    doll.battle.rof = Math.min(1000, Math.max(1, doll.battle.rof));
   } else { //hg,rf,ar,smg
-    doll.battle.rof = Math.min(120, Math.max(15,doll.battle.rof));
+    doll.battle.rof = Math.min(120, Math.max(15, doll.battle.rof));
   }
 
   // cap RoF properly
@@ -4332,7 +4146,7 @@ function addStack(target, effect, enemy) {
   $.each(target.battle.passives.filter(passive => 'hasStacks' == passive.trigger), (index, passiveskill) => {
     var b = target.battle.buffs.find(buf => buf.name == passiveskill.name);
     if (b != undefined) {
-      let stacksNeeded = $.isArray(passiveskill.stacksRequired) ? passiveskill.stacksRequired[passiveskill.level -1] : passiveskill.stacksRequired;
+      let stacksNeeded = $.isArray(passiveskill.stacksRequired) ? passiveskill.stacksRequired[passiveskill.level - 1] : passiveskill.stacksRequired;
       if ('stackChance' in b) {
         var expectedstacks = $.isArray(b.stackChance) ? b.stacks * b.stackChance[b.level - 1] / 100 : b.stacks * b.stackChance / 100;
         if (expectedstacks >= stacksNeeded) {
@@ -4348,7 +4162,7 @@ function addStack(target, effect, enemy) {
   $.each(target.battle.passives.filter(passive => 'notHasStacks' == passive.trigger), (index, passiveskill) => {
     var b = target.battle.buffs.find(buf => buf.name == passiveskill.name);
     if (b != undefined) {
-      let stacksNeeded = $.isArray(passiveskill.stacksRequired) ? passiveskill.stacksRequired[passiveskill.level -1] : passiveskill.stacksRequired;
+      let stacksNeeded = $.isArray(passiveskill.stacksRequired) ? passiveskill.stacksRequired[passiveskill.level - 1] : passiveskill.stacksRequired;
       if ('stackChance' in b) {
         var expectedstacks = $.isArray(b.stackChance) ? b.stacks * b.stackChance[b.level - 1] / 100 : b.stacks * b.stackChance / 100;
         if (expectedstacks <= stacksNeeded) {
@@ -4677,14 +4491,14 @@ function modifySkill(doll, effect, enemy, currentTime) {
 
     if (effect.modifySkill == 'almafavorite') {
       let alma = echelon.find(d => d.id == 293);
-      if(alma !== undefined) {
+      if (alma !== undefined) {
         alma.battle.skill.effects[0].duration = alma.battle.skill.effects[0].duration.map(time => time + 1);
       }
     }
 
     if (effect.modifySkill == 'dorothyfavorite') {
       let dorothy = echelon.find(d => d.id == 297);
-      if(dorothy !== undefined) {
+      if (dorothy !== undefined) {
         dorothy.battle.skill.effects[0].after[1].stat.eva = dorothy.battle.skill.effects[0].after[1].stat.eva.map(x => x / 2);
         dorothy.battle.skill.effects[1].after[1].stat.acc = dorothy.battle.skill.effects[0].after[1].stat.acc.map(x => x / 2)
       }
@@ -4692,7 +4506,7 @@ function modifySkill(doll, effect, enemy, currentTime) {
 
     if (effect.modifySkill == 'stellafavorite') {
       let stella = echelon.find(d => d.id == 294);
-      if(stella !== undefined) {
+      if (stella !== undefined) {
         stella.battle.passives.find(p => p.name == 'stella').stacksRequired = 10;
       }
     }

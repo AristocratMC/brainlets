@@ -1,4 +1,4 @@
-export const GROWTH_FACTORS = {
+const GROWTH_FACTORS = {
   mod: {
     basic: {
       hp: [96.283, 0.138],
@@ -33,7 +33,7 @@ export const GROWTH_FACTORS = {
   }
 };
 
-export const TYPE_MAPPING = {
+const TYPE_MAPPING = {
   1: 'HG',
   2: 'SMG',
   3: 'RF',
@@ -42,19 +42,136 @@ export const TYPE_MAPPING = {
   6: 'SG'
 };
 
-export const TYPE_SCALARS = [
+const TYPE_SCALARS = [
   { hp: 0.6, fp: 0.6, rof: 0.8, acc: 1.2, eva: 1.8, armor: 0 }, //hg
   { hp: 1.6, fp: 0.6, rof: 1.2, acc: 0.3, eva: 1.6, armor: 0 }, //smg
   { hp: 0.8, fp: 2.4, rof: 0.5, acc: 1.6, eva: 0.8, armor: 0 }, //rf
   { hp: 1.0, fp: 1.0, rof: 1.0, acc: 1.0, eva: 1.0, armor: 0 }, //ar
   { hp: 1.5, fp: 1.8, rof: 1.6, acc: 0.6, eva: 0.6, armor: 0 }, //mg
   { hp: 2.0, fp: 0.7, rof: 0.4, acc: 0.3, eva: 0.3, armor: 1 }, //sg
-]; 
+];
+
+const LIST_DPS_SMG = [
+  'vector',
+  'mp40',
+  'sr3mp',
+  'klin',
+  'vz61', // Skorpion
+  'microuzi',
+  'z62',
+  'm12',
+  'ppsh41',
+  'pps43',
+  'pp2000',
+  'stenmk2',
+  'evo3',
+  'pp19',
+  'stenmk2mod',
+  'm3',
+  'coltscw',
+  'x95',
+  'pdw', // Honey Badger
+  'pm9',
+  'microuzimod'
+];
+
+const LIST_DPS_SMG_ID = {};
+
+export const dollData = [];
+
+/** 
+ * Mapping of ID to T-Doll data, preferred over dollData[doll.id - 1]
+ */
+export const dollDataMap = {};
+
+const SPECIAL_DEFAULT_EQUIPS = { //numbers indicate ID of the equipment
+  52: [24, 66, 28], //M16
+  54: [4, 8, 24], //SOP
+  260: [4, 92, 24], //SOP mod3
+  55: [4, 8, 59], //STAR
+  261: [4, 71, 59], //STAR mod3
+  72: [20, 8, 60], //M1918
+  264: [20, 81, 60], // M1918 mod3
+  35: [58, 4, 57], //Springfield
+  26: [61, 45, 39], //MP5
+  56: [62, 24, 35], //AK-47
+  64: [62, 24, 35], //Type56-1
+  96: [67, 45, 39], //UMP9
+  97: [67, 45, 39], //UMP40
+  98: [67, 45, 39], //UMP45
+  270: [67, 45, 91], //UMP45 mod3
+  180: [20, 4, 69], //Ameli
+  259: [4, 24, 70], //M4A1 mod3
+  252: [39, 72, 35], //M1911 mod3
+  268: [73, 45, 39], //IDW mod3
+  269: [28, 45, 74], //Type64 mod3
+  258: [20, 75, 57], //FN-49 mod3
+  41: [20, 4, 79], //PTRD
+  256: [20, 80, 65], //Mosin-Nagant mod3
+  38: [20, 4, 65], //Mosin-Nagant
+  253: [82, 45, 35], //M1895 mod3
+  267: [83, 45, 35], //MP446 mod3
+  257: [20, 4, 84], //SV-98 mod3
+  249: [85, 45, 35], //CLEAR
+  250: [86, 45, 35], //FAIL
+  251: [88, 45, 35], //SAA mod3
+  266: [20, 89, 41], //Bren mod3
+  262: [90, 24, 35], //G3 mod3
+  254: [28, 45, 94], //STEN mod3
+  255: [20, 95, 57], //M14 mod3
+  263: [96, 24, 35], //G36 mod3
+  265: [20, 97, 41], //LWMMG mod3
+  289: [4, 100, 35], //AS Val mod3
+  290: [4, 101, 35], //StG44 mod3
+  //her molotov is better with EOT instead of her unique equip 291: [35, 45, 102], //Micro Uzi mod3
+  292: [111, 49, 12], //Dana
+  294: [20, 4, 112], //Stella
+  295: [39, 45, 113], //Sei
+  296: [107, 108, 109], //Jill
+  297: [28, 114, 39], //Dorothy
+  293: [20, 8, 115], //Alma
+};
+
+const SPECIAL_DEFAULT_EQUIPS_UNRELEASED = {
+  44: [20, 76, 57],  //Kar98k
+  63: [77, 24, 35],  //416
+  83: [20, 8, 78],   //MG3
+  66: [87, 24, 35],  //FAMAS
+  60: [4, 24, 93],   //G41
+  120: [20, 98, 41], //MG4
+  7: [99, 45, 35],   //Stechkin
+};
+
+// Night equips, mostly to give ARs PEQs instead of special equipment
+const SPECIAL_DEFAULT_EQUIPS_NIGHT = { //numbers indicate ID of the equipment
+  54: [4, 16, 24], //SOP
+  55: [4, 16, 59], //STAR
+  56: [16, 24, 35], //AK-47
+  259: [16, 24, 70], //M4A1 mod3
+  260: [4, 16, 24], //SOP mod3
+  261: [4, 16, 59], //STAR mod3
+  262: [90, 24, 35], //G3 mod3
+  263: [16, 24, 35], //G36 mod3
+  289: [16, 100, 35], //AS Val mod3
+  290: [16, 101, 35], //StG44 mod3
+};
+
+const SPECIAL_DEFAULT_EQUIPS_NIGHT_UNRELEASED = { //numbers indicate ID of the equipment
+};
 
 export default class dollUtils {
   /**
+   * Initialize values.
+   */
+  static init() {
+    this.loadDollData();
+  }
+
+  /**
    * Returns object containing stats of the given T-Doll
    * at the provided level.
+   * 
+   * @static
    * 
    * @param {Object} dollData - Object with T-Doll data
    * @param {number} level - Level to get the stats for the T-Doll
@@ -92,5 +209,126 @@ export default class dollUtils {
     dolldummy.rounds = dollData.rounds;
 
     return dolldummy;
+  }
+
+  /**
+   * Given the API name of a T-Doll, return its ID. 
+   * 
+   * @static
+   * @param {string} name - API name of a T-Doll, e.g. "vz61" for Skorpion; 
+   *   see dolls.json for details. 
+   * @returns {number} ID of the T-Doll with the specified API name
+   * @memberof dollUtils
+   */
+  static getDollIdFromApiName(name) {
+    let match = dollData.find(obj => {
+      return obj.api_name == name;
+    });
+    return match.id;
+  }
+
+  /**
+   * Loads dolls.json and populates constants. 
+   * 
+   * @static
+   * @memberof dollUtils
+   */
+  static loadDollData() {
+    let _this = this;
+    $.ajax({
+      async: false,
+      dataType: 'json',
+      url: '/static/girlsfrontline/dolls.json',
+      success: function (data, status, xhr) {
+        dollData.push(...data);
+
+        // map T-Doll data to dollDataMap
+        dollData.reduce(function (map, doll) {
+          map[doll.id] = doll;
+          return map;
+        }, dollDataMap);
+
+        // populate list of DPS SMGs to LIST_DPS_SMG_ID
+        LIST_DPS_SMG.reduce((map, name) => {
+          map[_this.getDollIdFromApiName(name)] = name;
+          return map;
+        }, LIST_DPS_SMG_ID);
+      },
+      error: function (xhr, status, err) {
+        console.log(status);
+        console.log(err);
+        return {};
+      }
+    });
+  }
+
+  /**
+   * Given a doll object, set its equips to the recommended default equipment. 
+   *
+   * @static
+   * 
+   * @param {Object} doll - Doll object, which will be modified by this method
+   * @param {boolean} isNight - If set to true, units will default to using optimized night battle equipment. 
+   * @param {boolean} [useUnreleasedEquips=true] - If set to true, will use default equips that are not released on EN yet
+   * @memberof dollUtils
+   */
+  static setDefaultEquips(doll, isNight, useUnreleasedEquips = true) {
+    switch (doll.type) {
+    case 1: //hg
+      doll.equip1 = 39; //suppressor
+      doll.equip2 = 45; //hp ammo
+      doll.equip3 = 35; //X-exo
+      if (isNight) {
+        doll.equip1 = 16; //PEQ
+      }
+      break;
+    case 2: //smg
+      doll.equip1 = doll.id in LIST_DPS_SMG_ID ? 35 : 28; //T-exo, or X-exo if considered DPS
+      doll.equip2 = 45; //hp ammo
+      doll.equip3 = doll.id in LIST_DPS_SMG_ID ? 8 : 39; //Suppressor, or EOT if considered DPS
+      break;
+    case 3: //rf
+      doll.equip1 = 20; //ap ammo
+      doll.equip2 = 4;  //scope
+      doll.equip3 = 57; //cape
+      break;
+    case 4: //ar
+      doll.equip1 = 4;  //scope
+      doll.equip2 = 24; //hv ammo
+      doll.equip3 = 35; //X-exo
+      if (isNight) {
+        doll.equip1 = 16; //PEQ
+      }
+      break;
+    case 5: //mg
+      doll.equip1 = 20; //ap ammo
+      doll.equip2 = 4;  //scope
+      doll.equip3 = 41; //ammo box
+      break;
+    case 6: //sg
+      doll.equip1 = 31; //armor
+      doll.equip2 = 49; //buckshot
+      doll.equip3 = 12; //red dot sight
+      if (isNight) {
+        doll.equip3 = 16; //PEQ
+      }
+      break;
+    }
+
+    if (doll.id in SPECIAL_DEFAULT_EQUIPS) {
+      if (isNight && (doll.id in SPECIAL_DEFAULT_EQUIPS_NIGHT)) {
+        doll.equip1 = SPECIAL_DEFAULT_EQUIPS_NIGHT[doll.id][0];
+        doll.equip2 = SPECIAL_DEFAULT_EQUIPS_NIGHT[doll.id][1];
+        doll.equip3 = SPECIAL_DEFAULT_EQUIPS_NIGHT[doll.id][2];
+      } else {
+        doll.equip1 = SPECIAL_DEFAULT_EQUIPS[doll.id][0];
+        doll.equip2 = SPECIAL_DEFAULT_EQUIPS[doll.id][1];
+        doll.equip3 = SPECIAL_DEFAULT_EQUIPS[doll.id][2];
+      }
+    } else if (useUnreleasedEquips && doll.id in SPECIAL_DEFAULT_EQUIPS_UNRELEASED) {
+      doll.equip1 = SPECIAL_DEFAULT_EQUIPS_UNRELEASED[doll.id][0];
+      doll.equip2 = SPECIAL_DEFAULT_EQUIPS_UNRELEASED[doll.id][1];
+      doll.equip3 = SPECIAL_DEFAULT_EQUIPS_UNRELEASED[doll.id][2];
+    }
   }
 }
