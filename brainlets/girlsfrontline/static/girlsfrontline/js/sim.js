@@ -1,30 +1,31 @@
+/* global Highcharts */
 import damageUtils from './damage-utils.js';
 import dollUtils, { dollData, dollDataMap, VALID_EQUIPS, SPECIAL_VALID_EQUIPS } from './doll-utils.js';
 import uiUtils from './ui-utils.js';
 
-var echelon;
-var fairy;
-var isNight;
-var isBoss;
-var equipData;
-var fairyData;
-var talentData;
-var enemyEva;
-var enemyArmor;
-var enemyCount;
-var graphData;
-var showBuffedStats;
-var battleLength;
-var walkTime;
-var useFortressNode;
-var fortressNodeLevel;
-var savedTeamList;
-var savedTeamCount;
-var isViewFancyPreference;      // Client-side preference for "Fancy View" | LocalStorage['preference-view-fancy']
-var isTooltipClickablePreference; //Client-side preference for "Clickable Tooltip" | LocalStorage['preference-tooltip-clickable']
-var isEnOnlyPreference;         // Client-side preference for "Show EN Only" | LocalStorage['preference-en-only']
-var selectedDoll = undefined;
-var graphColors = ['#7CB5EC', '#434348', '#90ED7D', '#F7A35C', '#8085E9', '#F15C80'];
+let echelon;
+let fairy;
+let isNight;
+let isBoss;
+let equipData;
+let fairyData;
+let talentData;
+let enemyEva;
+let enemyArmor;
+let enemyCount;
+let graphData;
+let showBuffedStats;
+let battleLength;
+let walkTime;
+let useFortressNode;
+let fortressNodeLevel;
+let savedTeamList;
+let savedTeamCount;
+let isViewFancyPreference;      // Client-side preference for "Fancy View" | LocalStorage['preference-view-fancy']
+let isTooltipClickablePreference; //Client-side preference for "Clickable Tooltip" | LocalStorage['preference-tooltip-clickable']
+let isEnOnlyPreference;         // Client-side preference for "Show EN Only" | LocalStorage['preference-en-only']
+let selectedDoll = undefined;
+let graphColors = ['#7CB5EC', '#434348', '#90ED7D', '#F7A35C', '#8085E9', '#F15C80'];
 let buttonsWithOpenTooltips = [], mousedOverTooltip = null;
 let selectModalInitialized = false;   // Set to true after doll select modal initialized
 let allowDollSelectTooltip = false;   // Bugfix for mouseover tooltips
@@ -124,8 +125,8 @@ $(function () {
   savedTeamCount = localStorage.getItem('savedTeamCount') !== null ? localStorage.savedTeamCount : 0;
   savedTeamList = [];
   if (savedTeamCount != 0) {
-    var i = 0;
-    var loadedCount = 0;
+    let i = 0;
+    let loadedCount = 0;
     while (loadedCount < savedTeamCount) {
       if (localStorage.getItem('team' + i) === null) {
         i++;
@@ -156,7 +157,7 @@ $(function () {
   $('#fairy-select button').click(changeFairy);
   $('#remove-fairy').click(removeFairy);
 
-  for (var i = 1; i <= 5; i++) {
+  for (let i = 1; i <= 5; i++) {
     $('#doll' + i + ' .add-doll').click(i, selectDoll);
     $('#doll' + i + ' .remove-doll').click(i, removeDoll);
     $('#doll' + i + ' .doll-level-select').change(i - 1, changeLevel);
@@ -165,15 +166,15 @@ $(function () {
     $('#doll' + i + ' .skill-toggle').change(i - 1, toggleSkillUsage);
     $('#doll' + i + ' .skill-control button').click(i - 1, openSkillControl);
     $('#doll' + i + ' .affection').click(i - 1, changeAffection);
-    for (var j = 1; j <= 3; j++) {
+    for (let j = 1; j <= 3; j++) {
       $('#doll' + i + ' .equip' + j).click({ doll: i - 1, equip: j }, selectEquipment);
       $('#doll' + i + ' .equip' + j + '-level-select').change(i - 1, changeEquipLevel);
     }
   }
 
-  var isMobileDevice = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-  var gridSquares = [12, 13, 14, 22, 23, 24, 32, 33, 34];
-  for (i = 0; i < gridSquares.length; i++) {
+  let isMobileDevice = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+  let gridSquares = [12, 13, 14, 22, 23, 24, 32, 33, 34];
+  for (let i = 0; i < gridSquares.length; i++) {
     if (isMobileDevice) {
       $('#pos' + gridSquares[i]).click(moveDoll);
     }
@@ -204,15 +205,15 @@ $(function () {
 
 function initEchelon() {
   echelon = [createDummyDoll(12),
-  createDummyDoll(22),
-  createDummyDoll(32),
-  createDummyDoll(13),
-  createDummyDoll(23)];
+    createDummyDoll(22),
+    createDummyDoll(32),
+    createDummyDoll(13),
+    createDummyDoll(23)];
   fairy = createDummyFairy();
 }
 
 function createDummyDoll(p) {
-  var obj;
+  let obj;
   obj = {
     id: -1,
     pos: p,
@@ -227,13 +228,13 @@ function createDummyDoll(p) {
     battle: {},
     equip_bonus: {},
     tile_bonus: {}
-  }
+  };
 
   return obj;
 }
 
 function createDummyFairy() {
-  var obj;
+  let obj;
   obj = {
     id: -1,
     name: '',
@@ -253,14 +254,14 @@ function initDollSelectModal() {
   let sheetToModify = sheets[0];
   const SPRITE_WIDTH = 129;
   const SPRITE_HEIGHT = 85;
-  var doll_types = ['All', 'HG', 'SMG', 'RF', 'AR', 'MG', 'SG'];
-  for (var i = 0; i < dollData.length; i++) {
-    var doll = dollData[i];
+  let doll_types = ['All', 'HG', 'SMG', 'RF', 'AR', 'MG', 'SG'];
+  for (let i = 0; i < dollData.length; i++) {
+    let doll = dollData[i];
 
-    var tilegrid = getTileGridHTML(doll);
+    let tilegrid = getTileGridHTML(doll);
 
     let buttonFancy = `<button type="button" class="btn mb-1 mr-1 doll_portrait_button img_${doll.api_name}" data-id="${doll.id}" data-toggle="tooltip-doll-select" data-placement="top" data-html="true" data-original-title=""></button>`;
-    let buttonBasic = `<button type="button" class="btn mb-1 mr-1 doll_simple_button" data-id="${doll.id}" data-toggle="tooltip-doll-select" data-placement="top" data-html="true" data-original-title="">${doll.name}</button>`
+    let buttonBasic = `<button type="button" class="btn mb-1 mr-1 doll_simple_button" data-id="${doll.id}" data-toggle="tooltip-doll-select" data-placement="top" data-html="true" data-original-title="">${doll.name}</button>`;
 
     // Append buttons to nav tabs
     $(`#doll-list-${doll.type} .stars${doll.rarity}`)
@@ -288,10 +289,10 @@ function initDollSelectModal() {
     sheetToModify.insertRule(`.btn.img_${doll.api_name} { background-position: ${-1 * (2 * doll.spritesheet_col - 2) * SPRITE_WIDTH}px ${-1 * (doll.spritesheet_row - 1) * SPRITE_HEIGHT}px; }`, 0);
     sheetToModify.insertRule(`.btn.img_${doll.api_name}:hover, .btn.img_${doll.api_name}:focus { background-position: ${-1 * (2 * doll.spritesheet_col - 1) * SPRITE_WIDTH}px ${-1 * (doll.spritesheet_row - 1) * SPRITE_HEIGHT}px; }`, 0);
 
-    var tileTargetTypes;
+    let tileTargetTypes;
     if ($.isArray(doll.tiles.target_type)) {
       tileTargetTypes = doll_types[doll.tiles.target_type[0]];
-      for (var j = 1; j < doll.tiles.target_type.length; j++) {
+      for (let j = 1; j < doll.tiles.target_type.length; j++) {
         tileTargetTypes += ', ' + doll_types[doll.tiles.target_type[j]];
       }
     } else {
@@ -309,7 +310,7 @@ function initDollSelectModal() {
     let optional_skill2 = doll.tooltip_skill2 ?
       `<hr>
   <div class="row">
-  <div class="col-2 pl-3 pr-1"><div class="float-right"><img src="/static/girlsfrontline/sim/dolls/icon/skillicon/${doll.icon_name_skill2 ? doll.icon_name_skill2 : 'variablebuff'}.png" class="img-fluid" /></div></div>
+  <div class="col-2 pl-3 pr-1"><div class="float-right"><img src="/static/girlsfrontline/sim/dolls/icon/skillicon/${doll.icon_name_skill2 ? doll.icon_name_skill2 : 'letiablebuff'}.png" class="img-fluid" /></div></div>
     <div class="col-10 pl-1 pr-3 text-left small"><b>${doll.name_skill2}</b><br />${doll.tooltip_skill2 ? doll.tooltip_skill2 : 'N/A'}</div>
   </div>` : '';
 
@@ -350,7 +351,7 @@ function initDollSelectModal() {
   <div class="col-9">
     <p class="doll_tooltip_header">
       ${doll.aliases[0]} &middot;
-      <a href="https://en.gfwiki.com/wiki/${doll.name.replace(" ", "_")}" target="_blank">Wiki</a>
+      <a href="https://en.gfwiki.com/wiki/${doll.name.replace(' ', '_')}" target="_blank">Wiki</a>
       ${optional_voodoo}
     </p>
     <hr>
@@ -360,7 +361,7 @@ function initDollSelectModal() {
     </div>
     <hr>
     <div class="row">
-      <div class="col-2 pl-3 px-1"><div class="float-right"><img src="/static/girlsfrontline/sim/dolls/icon/skillicon/${doll.icon_name_skill1 ? doll.icon_name_skill1 : 'variablebuff'}.png" class="img-fluid" /></div></div>
+      <div class="col-2 pl-3 px-1"><div class="float-right"><img src="/static/girlsfrontline/sim/dolls/icon/skillicon/${doll.icon_name_skill1 ? doll.icon_name_skill1 : 'letiablebuff'}.png" class="img-fluid" /></div></div>
       <div class="col-10 pl-1 pr-3 text-left small"><b>${doll.name_skill1}</b><br />${doll.tooltip_skill1}</div>
     </div>
     ${optional_skill2}
@@ -387,7 +388,7 @@ function initDollSelectModal() {
       if (tileEffectAmount != 0) {
         tileBuffContainer.append(
           $('<div>').append($('<img>').prop('src', `/static/girlsfrontline/sim/${tileEffect}.png`).addClass('aura_container_img')).append(
-            $('<span>').html(`${tileEffectAmount}%`)))
+            $('<span>').html(`${tileEffectAmount}%`)));
       }
     }
 
@@ -544,7 +545,7 @@ function hideBasedOnFilters() {
         let filterAttribute = $(checkbox).data('filter-attribute');
         let tileBuffAttr = doll.tiles.effect[filterAttribute];
 
-        console.log(`${doll.name} ${tileBuffAttr} ${tileBuffAttr == [0, 0]} ${tileBuffAttr == 0}`)
+        console.log(`${doll.name} ${tileBuffAttr} ${tileBuffAttr == [0, 0]} ${tileBuffAttr == 0}`);
         if (!(tileBuffAttr == 0 || (tileBuffAttr[0] == 0 && tileBuffAttr[1] == 0))) {
           matchCount = matchCount + 1;
         }
@@ -576,10 +577,10 @@ function refilterVisibleButtons() {
 }
 
 function getTileGridHTML(doll) {
-  var selfSquare = doll.tiles.self;
-  var targetSquares = doll.tiles.target.split(",").map(tile => parseInt(tile) + doll.tiles.self);
+  let selfSquare = doll.tiles.self;
+  let targetSquares = doll.tiles.target.split(',').map(tile => parseInt(tile) + doll.tiles.self);
 
-  var tileType = [0, 1, 2, 3, 4, 5, 6, 7, 8];
+  let tileType = [0, 1, 2, 3, 4, 5, 6, 7, 8];
   $.each([12, 13, 14, 22, 23, 24, 32, 33, 34], (index, tile) => {
     if (tile == doll.tiles.self) {
       tileType[index] = 'tilegrid-self';
@@ -590,21 +591,21 @@ function getTileGridHTML(doll) {
     }
   });
 
-  var htmlstring = '<div class=\"aura_container\">';
-  htmlstring += '<div class=\"tilegrid-row mx-auto row no-gutters\">';
-  htmlstring += '<div class=\"tile12 tilegrid-col ' + tileType[0] + ' col border border-dark\"></div>';
-  htmlstring += '<div class=\"tile13 tilegrid-col ' + tileType[1] + ' col border-top border-bottom border-dark\"></div>';
-  htmlstring += '<div class=\"tile14 tilegrid-col ' + tileType[2] + ' col border border-dark\"></div>';
+  let htmlstring = '<div class="aura_container">';
+  htmlstring += '<div class="tilegrid-row mx-auto row no-gutters">';
+  htmlstring += '<div class="tile12 tilegrid-col ' + tileType[0] + ' col border border-dark"></div>';
+  htmlstring += '<div class="tile13 tilegrid-col ' + tileType[1] + ' col border-top border-bottom border-dark"></div>';
+  htmlstring += '<div class="tile14 tilegrid-col ' + tileType[2] + ' col border border-dark"></div>';
   htmlstring += '</div>';
-  htmlstring += '<div class=\"tilegrid-row mx-auto row tilegrid-row-center no-gutters\">';
-  htmlstring += '<div class=\"tile22 tilegrid-col ' + tileType[3] + ' col border-left border-right border-dark\"></div>';
-  htmlstring += '<div class=\"tile23 tilegrid-col ' + tileType[4] + ' col\"></div>';
-  htmlstring += '<div class=\"tile24 tilegrid-col ' + tileType[5] + ' col border-left border-right border-dark\"></div>';
+  htmlstring += '<div class="tilegrid-row mx-auto row tilegrid-row-center no-gutters">';
+  htmlstring += '<div class="tile22 tilegrid-col ' + tileType[3] + ' col border-left border-right border-dark"></div>';
+  htmlstring += '<div class="tile23 tilegrid-col ' + tileType[4] + ' col"></div>';
+  htmlstring += '<div class="tile24 tilegrid-col ' + tileType[5] + ' col border-left border-right border-dark"></div>';
   htmlstring += '</div>';
-  htmlstring += '<div class=\"tilegrid-row mx-auto row no-gutters\">';
-  htmlstring += '<div class=\"tile32 tilegrid-col ' + tileType[6] + ' col border border-dark\"></div>';
-  htmlstring += '<div class=\"tile33 tilegrid-col ' + tileType[7] + ' col border-top border-bottom border-dark\"></div>';
-  htmlstring += '<div class=\"tile34 tilegrid-col ' + tileType[8] + ' col border border-dark\"></div>';
+  htmlstring += '<div class="tilegrid-row mx-auto row no-gutters">';
+  htmlstring += '<div class="tile32 tilegrid-col ' + tileType[6] + ' col border border-dark"></div>';
+  htmlstring += '<div class="tile33 tilegrid-col ' + tileType[7] + ' col border-top border-bottom border-dark"></div>';
+  htmlstring += '<div class="tile34 tilegrid-col ' + tileType[8] + ' col border border-dark"></div>';
   htmlstring += '</div>';
   htmlstring += '</div>';
 
@@ -612,23 +613,23 @@ function getTileGridHTML(doll) {
 }
 
 function initEquipSelectModal() {
-  for (var i = 0; i < equipData.length; i++) {
-    var equip = equipData[i];
+  for (let i = 0; i < equipData.length; i++) {
+    let equip = equipData[i];
     $('#equip-select .stars' + equip.rarity).append('<button type="button" class="btn mb-1 mr-1" data-id="' + equip.id + '" data-type="' + equip.type + '" data-toggle="tooltip" data-placement="top" data-original-title="' + equip.tooltip + '"><img src="/static/girlsfrontline/sim/equips/' + equip.type + '.png" class="img-fluid"></img></button>');
   }
 }
 
 function initFairySelectModal() {
-  var fairy_types = ['', 'combat', 'tactical'];
-  for (var i = 0; i < fairyData.length; i++) {
-    var fairy = fairyData[i];
+  let fairy_types = ['', 'combat', 'tactical'];
+  for (let i = 0; i < fairyData.length; i++) {
+    let fairy = fairyData[i];
     $('#fairy-select .' + fairy_types[fairy.type]).append('<button type="button" class="btn mb-1 mr-1" data-id="' + fairy.id + '" data-toggle="tooltip" data-placement="top" data-html="true" data-original-title="' + fairy.tooltip_aura + '<br>' + fairy.tooltip_skill + '">' + fairy.name + '</button>');
   }
 }
 
 function initTalentSelect() {
-  for (var i = 0; i < talentData.length; i++) {
-    var talent = talentData[i];
+  for (let i = 0; i < talentData.length; i++) {
+    let talent = talentData[i];
     $('.fairy-talent-select').append('<option value="' + talent.id + '">' + talent.name + '</option>');
   }
 }
@@ -643,8 +644,8 @@ function changeEnemyStats() {
 }
 
 function changeAffection(event) {
-  var dollIndex = event.data;
-  var doll = echelon[dollIndex];
+  let dollIndex = event.data;
+  let doll = echelon[dollIndex];
 
   $('#doll' + (dollIndex + 1) + ' .affection').children().eq(doll.affection).prop('hidden', true);
   doll.affection++;
@@ -726,7 +727,7 @@ function changeFortressNodeLevel() {
 
 
 function generateSavedTeamGrid(team) {
-  var positions = {};
+  let positions = {};
 
   if (team.doll1.id != -1) {
     positions[team.doll1.pos] = team.doll1.id;
@@ -744,7 +745,7 @@ function generateSavedTeamGrid(team) {
     positions[team.doll5.pos] = team.doll5.id;
   }
 
-  var htmlstring = '';
+  let htmlstring = '';
   htmlstring += '<div class="col-auto">';
   htmlstring += '<div class="row no-gutters saved-team-row">';
   htmlstring += '<div class="col border border-dark saved-team-col">';
@@ -819,9 +820,9 @@ function generateTeamsModal() {
   }
 
   $('#teams-modal-body').html('');
-  for (var i = 0; i < savedTeamList.length; i++) {
-    var team = savedTeamList[i];
-    var teamhtml = '<div class="row no-gutters">';
+  for (let i = 0; i < savedTeamList.length; i++) {
+    let team = savedTeamList[i];
+    let teamhtml = '<div class="row no-gutters">';
     teamhtml += '<div class="col-auto">';
     teamhtml += '<button class="load-team btn btn-sm btn-default mb-5" type="button" data-id="' + team.id + '">Load</button><br>';
     teamhtml += '<button class="delete-team btn btn-sm btn-danger mb-5" type="button" data-id="' + team.id + '">Delete</button><br>';
@@ -829,12 +830,12 @@ function generateTeamsModal() {
     teamhtml += generateSavedTeamGrid(team);
     teamhtml += '<div class="col-2">';
     if (team.fairy.id != -1) {
-      teamhtml += '<img src="/static/girlsfrontline/sim/fairies/' + team.fairy.id + '.png" class="saved-fairy img-fluid"></img>'
+      teamhtml += '<img src="/static/girlsfrontline/sim/fairies/' + team.fairy.id + '.png" class="saved-fairy img-fluid"></img>';
     } else {
-      teamhtml += '<img src="/static/girlsfrontline/sim/placeholder.png" class="saved-fairy img-fluid"></img>'
+      teamhtml += '<img src="/static/girlsfrontline/sim/placeholder.png" class="saved-fairy img-fluid"></img>';
     }
     teamhtml += '</div>';
-    teamhtml += '<div class="col"><textarea class="form-control saved-text" data-id="' + team.id + '" rows="9">' + team.savedText + '</textarea></div>'
+    teamhtml += '<div class="col"><textarea class="form-control saved-text" data-id="' + team.id + '" rows="9">' + team.savedText + '</textarea></div>';
     teamhtml += '</div><hr>';
     $('#teams-modal-body').append(teamhtml);
   }
@@ -852,17 +853,17 @@ function generateTeamsModal() {
 
 function saveTeam() {
   //don't allow teams to be saved unless there is atleast one doll in them
-  var doll = echelon.find(d => d.id != -1);
+  let doll = echelon.find(d => d.id != -1);
   if (doll === undefined) {
     return;
   }
 
-  var name = prompt("Enter a name for this echelon:");
+  let name = prompt('Enter a name for this echelon:');
   if (name == null || name == '') {
     return;
   }
 
-  var team = {
+  let team = {
     doll1: $.extend(true, {}, echelon[0]),
     doll2: $.extend(true, {}, echelon[1]),
     doll3: $.extend(true, {}, echelon[2]),
@@ -872,7 +873,7 @@ function saveTeam() {
     savedText: name
   };
 
-  for (var i = 0; i < 5; i++) {
+  for (let i = 0; i < 5; i++) {
     doll = echelon[i];
     if (doll.id == -1) {
       continue;
@@ -889,8 +890,8 @@ function saveTeam() {
     }
   }
 
-  var i = 0;
-  var saved = false;
+  let i = 0;
+  let saved = false;
   while (!saved) {
     if (localStorage.getItem('team' + i) === null) {
       team.id = i;
@@ -915,12 +916,12 @@ function selectTeam(event) {
 function loadTeam(event) {
   $('#teams-modal').modal('hide');
 
-  var t = savedTeamList.find(team => team.id == parseInt($(event.target).attr('data-id')));
+  let t = savedTeamList.find(team => team.id == parseInt($(event.target).attr('data-id')));
   if (t === undefined) {
     return;
   }
 
-  var team = $.extend(true, {}, t);
+  let team = $.extend(true, {}, t);
 
   echelon[0] = team.doll1;
   echelon[1] = team.doll2;
@@ -929,7 +930,7 @@ function loadTeam(event) {
   echelon[4] = team.doll5;
   fairy = team.fairy;
 
-  for (var i = 0; i < 5; i++) {
+  for (let i = 0; i < 5; i++) {
     if (echelon[i].id == -1) {
       continue;
     }
@@ -959,7 +960,7 @@ function loadTeam(event) {
     $('#pos' + value).attr('data-index', -1);
   });
 
-  for (var i = 0; i < 5; i++) {
+  for (let i = 0; i < 5; i++) {
     $('#pos' + echelon[i].pos).attr('data-index', i);
   }
 
@@ -969,13 +970,13 @@ function loadTeam(event) {
 }
 
 function deleteTeam(event) {
-  var id = parseInt($(event.target).attr('data-id'));
-  var team = savedTeamList.find(team => team.id == id);
+  let id = parseInt($(event.target).attr('data-id'));
+  let team = savedTeamList.find(team => team.id == id);
   if (team === undefined) {
     return;
   }
 
-  if (!confirm("Are you sure you want to delete this echelon?")) {
+  if (!confirm('Are you sure you want to delete this echelon?')) {
     return;
   }
 
@@ -988,12 +989,12 @@ function deleteTeam(event) {
 }
 
 function changeTeamText(event) {
-  var team = savedTeamList.find(team => team.id == parseInt($(event.target).attr('data-id')));
+  let team = savedTeamList.find(team => team.id == parseInt($(event.target).attr('data-id')));
   if (team === undefined) {
     return;
   }
 
-  var newText = $(event.target).val();
+  let newText = $(event.target).val();
   team.savedText = newText;
   localStorage.setItem('team' + team.id, JSON.stringify(team));
 
@@ -1011,8 +1012,8 @@ function selectEquipment(event) {
 
   //show buttons for only equips that can be worn by current doll in current slot taking level into account
   $('#equip-select [data-id]').prop('hidden', true);
-  var validTypes = getValidEquipTypes(event.data.doll, event.data.equip);
-  var dollLevel = parseInt($('#doll' + (event.data.doll + 1) + ' .doll-level-select').val());
+  let validTypes = getValidEquipTypes(event.data.doll, event.data.equip);
+  let dollLevel = parseInt($('#doll' + (event.data.doll + 1) + ' .doll-level-select').val());
   if (dollLevel < 20) {
     validTypes = [-1];
   } else if (dollLevel < 50 && event.data.equip != 1) {
@@ -1020,7 +1021,7 @@ function selectEquipment(event) {
   } else if (dollLevel < 80 && event.data.equip == 3) {
     validTypes = [-1];
   }
-  for (var i = 0; i < validTypes.length; i++) {
+  for (let i = 0; i < validTypes.length; i++) {
     $('#equip-select [data-type=' + validTypes[i] + ']').prop('hidden', false);
   }
 
@@ -1036,13 +1037,13 @@ function selectEquipment(event) {
 }
 
 function getValidEquipTypes(dollIndex, equipSlot) {
-  var doll = echelon[dollIndex];
+  let doll = echelon[dollIndex];
 
   if (doll.id == -1) {
     return [-1];
   }
 
-  var validTypes = [];
+  let validTypes = [];
   $.each(VALID_EQUIPS[doll.type - 1][equipSlot - 1], (index, value) => {
     validTypes.push(value);
   });
@@ -1066,7 +1067,7 @@ function getValidEquipTypes(dollIndex, equipSlot) {
       validTypes = [10, 11, 12, 24]; //x-exo, armor, t-exo, m16 unique armor
 
       //ensure same accessory cannot be equipped twice
-      var otherSlotEquipID = equipSlot == 2 ? doll.equip3 : doll.equip2;
+      let otherSlotEquipID = equipSlot == 2 ? doll.equip3 : doll.equip2;
       if (otherSlotEquipID != -1) {
         validTypes = validTypes.filter(type => type != equipData[otherSlotEquipID - 1].type);
         if (equipData[otherSlotEquipID - 1].type == 10) {
@@ -1094,7 +1095,7 @@ function getValidEquipTypes(dollIndex, equipSlot) {
         validTypes.push(50); //sop unique equip
 
       //ensure same accessory cannot be equipped twice
-      var otherSlotEquipID = equipSlot == 1 ? doll.equip2 : doll.equip1;
+      let otherSlotEquipID = equipSlot == 1 ? doll.equip2 : doll.equip1;
       if (otherSlotEquipID != -1) {
         validTypes = validTypes.filter(type => type != equipData[otherSlotEquipID - 1].type);
       }
@@ -1113,7 +1114,7 @@ function getValidEquipTypes(dollIndex, equipSlot) {
         validTypes.push(29); //star mod3 unique equip
 
       //ensure same accessory cannot be equipped twice
-      var otherSlotEquipID = equipSlot == 1 ? doll.equip2 : doll.equip1;
+      let otherSlotEquipID = equipSlot == 1 ? doll.equip2 : doll.equip1;
       if (otherSlotEquipID != -1) {
         validTypes = validTypes.filter(type => type != equipData[otherSlotEquipID - 1].type);
       }
@@ -1130,8 +1131,8 @@ function getValidEquipTypes(dollIndex, equipSlot) {
 function changeEquipment(event) {
   $('#equip-select').modal('hide');
 
-  var dollIndex = event.data.doll;
-  var equipSlot = event.data.equip;
+  let dollIndex = event.data.doll;
+  let equipSlot = event.data.equip;
 
   echelon[dollIndex]['equip' + equipSlot] = parseInt($(event.target).attr('data-id'));
   $('#doll' + (dollIndex + 1) + ' .equip' + equipSlot + '-level-select').val(10);
@@ -1151,7 +1152,7 @@ function changeEquipment(event) {
 }
 
 function changeEquipLevel(event) {
-  var doll = echelon[event.data];
+  let doll = echelon[event.data];
 
   calculateEquipBonus(event.data);
   calculatePreBattleStatsForDoll(event.data);
@@ -1161,8 +1162,8 @@ function changeEquipLevel(event) {
 
 function removeEquipment(event) {
   $('#equip-select').modal('hide');
-  var dollIndex = event.data.doll;
-  var equipSlot = event.data.equip;
+  let dollIndex = event.data.doll;
+  let equipSlot = event.data.equip;
 
   echelon[dollIndex]['equip' + equipSlot] = -1;
 
@@ -1182,7 +1183,7 @@ function removeEquipment(event) {
 function selectDoll(event) {
   event.preventDefault();
   // $('#doll-select button').prop('disabled', false);
-  // for(var i = 0; i < echelon.length; i++) {
+  // for(let i = 0; i < echelon.length; i++) {
   //   $('#doll-select button[data-id='+echelon[i].id+']').prop('disabled', true);
   // }
 
@@ -1216,7 +1217,7 @@ function processDollSelectModal(data) {
 
 function changeDollSelectFilter(event) {
   hideOpenTooltips();
-  var query = $('#doll-filter').val();
+  let query = $('#doll-filter').val();
 
   // Check if query works regex
   let searchTokens = [];
@@ -1227,7 +1228,7 @@ function changeDollSelectFilter(event) {
   let regex;
 
   try {
-    regex = new RegExp(compiledRegexString, "i")
+    regex = new RegExp(compiledRegexString, 'i');
   } catch (e) {
     // Invalid regex
     return;
@@ -1306,8 +1307,8 @@ function changeDoll(event) {
 
   $('#doll-select').modal('hide');
 
-  var selectedDoll = dollData[$(event.target).attr('data-id') - 1];
-  var index = event.data - 1;
+  let selectedDoll = dollData[$(event.target).attr('data-id') - 1];
+  let index = event.data - 1;
 
   echelon[index] = createDummyDoll(echelon[index].pos);
   echelon[index].name = selectedDoll.name;
@@ -1315,11 +1316,11 @@ function changeDoll(event) {
   echelon[index].type = selectedDoll.type;
   echelon[index].tiles = selectedDoll.tiles;
   echelon[index].tooltip_tiles = selectedDoll.tooltip_tiles;
-  var doll_types = ['All', 'HG', 'SMG', 'RF', 'AR', 'MG', 'SG'];
-  var tileTargetTypes;
+  let doll_types = ['All', 'HG', 'SMG', 'RF', 'AR', 'MG', 'SG'];
+  let tileTargetTypes;
   if ($.isArray(echelon[index].tiles.target_type)) {
     tileTargetTypes = doll_types[echelon[index].tiles.target_type[0]];
-    for (var j = 1; j < echelon[index].tiles.target_type.length; j++) {
+    for (let j = 1; j < echelon[index].tiles.target_type.length; j++) {
       tileTargetTypes += ', ' + doll_types[echelon[index].tiles.target_type[j]];
     }
   } else {
@@ -1382,14 +1383,14 @@ function changeDoll(event) {
 }
 
 function changeLevel(event) {
-  var doll = echelon[event.data];
+  let doll = echelon[event.data];
 
   if (doll.id == -1) {
     return;
   }
 
   //remove equipment if it can no longer be equipped
-  var dollLevel = parseInt($('#doll' + (event.data + 1) + ' .doll-level-select').val());
+  let dollLevel = parseInt($('#doll' + (event.data + 1) + ' .doll-level-select').val());
   if (dollLevel < 80 && doll.equip3 != -1)
     doll.equip3 = -1;
   if (dollLevel < 50 && doll.equip2 != -1)
@@ -1397,7 +1398,7 @@ function changeLevel(event) {
   if (dollLevel < 20 && doll.equip1 != -1)
     doll.equip1 = -1;
 
-  for (var i = 1; i <= 3; i++) {
+  for (let i = 1; i <= 3; i++) {
     if (doll['equip' + i] == -1)
       continue;
 
@@ -1429,7 +1430,7 @@ function changeLevel(event) {
 function removeDoll(event) {
   event.preventDefault();
 
-  var index = event.data - 1;
+  let index = event.data - 1;
   $('#pos' + echelon[index].pos).attr('data-index', index);
   echelon[index] = createDummyDoll(echelon[index].pos);
   $('#doll' + (index + 1) + ' .doll-level-select').children().prop('disabled', false);
@@ -1443,7 +1444,7 @@ function removeDoll(event) {
 }
 
 function setDefaultEquips(dollIndex) {
-  var doll = echelon[dollIndex];
+  let doll = echelon[dollIndex];
   $('#doll' + (dollIndex + 1) + ' .equip1-level-select').val(10);
   $('#doll' + (dollIndex + 1) + ' .equip2-level-select').val(10);
   $('#doll' + (dollIndex + 1) + ' .equip3-level-select').val(10);
@@ -1473,7 +1474,7 @@ function toggleSkillUsage(event) {
 }
 
 function openSkillControl(event) {
-  var doll = echelon[event.data];
+  let doll = echelon[event.data];
   if (doll.id == -1 || !doll.special_control) {
     return;
   }
@@ -1487,7 +1488,7 @@ function closeSkillControl(event) {
   $('#skill-control-modal').modal('hide');
   $('#skill-control-apply').off('click');
 
-  var doll = echelon[event.data];
+  let doll = echelon[event.data];
   if (doll.id == -1 || !doll.special_control) {
     return;
   }
@@ -1503,7 +1504,7 @@ function closeSkillControl(event) {
 function changeFairy(event) {
   $('#fairy-select').modal('hide');
 
-  var selectedFairy = fairyData[$(event.target).attr('data-id') - 1];
+  let selectedFairy = fairyData[$(event.target).attr('data-id') - 1];
 
   fairy = $.extend(true, {}, selectedFairy);
 
@@ -1673,7 +1674,7 @@ function closeFairySkillControl() {
 
 
 function updateUIAllDolls() {
-  for (var i = 0; i < echelon.length; i++) {
+  for (let i = 0; i < echelon.length; i++) {
     updateUIForDoll(i); //update stat card and grid for each doll
   }
 
@@ -1684,8 +1685,8 @@ function updateUIAllDolls() {
     }
     $('#pos' + value + ' > img').attr('src', '/static/girlsfrontline/sim/placeholder.png');
     $('#pos' + value + ' .tilegrid').prop('hidden', true);
-    var tile_bonuses = ['fp', 'acc', 'eva', 'rof', 'crit', 'skillcd', 'armor'];
-    for (i = 0; i < tile_bonuses.length; i++) {
+    let tile_bonuses = ['fp', 'acc', 'eva', 'rof', 'crit', 'skillcd', 'armor'];
+    for (let i = 0; i < tile_bonuses.length; i++) {
       $('#pos' + value + ' .' + tile_bonuses[i]).prop('hidden', true);
     }
   });
@@ -1720,7 +1721,7 @@ function updateUIAllDolls() {
 }
 
 function updateUIForDoll(index) {
-  var doll = echelon[index];
+  let doll = echelon[index];
   if (doll.id == -1) {
     $('#pos' + doll.pos + ' > img').attr('src', '/static/girlsfrontline/sim/placeholder.png');
     $('#pos' + doll.pos + ' .tilegrid').prop('hidden', true);
@@ -1806,10 +1807,10 @@ function updateUIForDoll(index) {
 
     $('#pos' + doll.pos + ' .tilegrid').prop('hidden', false);
     $('#pos' + doll.pos + ' .tilegrid').attr('data-original-title', doll.tooltip_tiles);
-    var targetSquares = doll.tiles.target.split(',');
+    let targetSquares = doll.tiles.target.split(',');
     $('#pos' + doll.pos + ' .tilegrid-col').removeClass('tilegrid-target tilegrid-neutral tilegrid-self');
     $('#pos' + doll.pos + ' .tile' + doll.tiles.self).addClass('tilegrid-self');
-    for (var i = 0; i < targetSquares.length; i++) {
+    for (let i = 0; i < targetSquares.length; i++) {
       $('#pos' + doll.pos + ' .tile' + (doll.tiles.self + parseInt(targetSquares[i]))).addClass('tilegrid-target');
     }
     $.each([12, 13, 14, 22, 23, 24, 32, 33, 34], function (index, value) {
@@ -1821,8 +1822,8 @@ function updateUIForDoll(index) {
 
 
 
-  var tile_bonuses = ['fp', 'acc', 'eva', 'rof', 'crit', 'skillcd', 'armor'];
-  for (i = 0; i < tile_bonuses.length; i++) {
+  let tile_bonuses = ['fp', 'acc', 'eva', 'rof', 'crit', 'skillcd', 'armor'];
+  for (let i = 0; i < tile_bonuses.length; i++) {
     if (doll.tile_bonus[tile_bonuses[i]] > 0) {
       $('#pos' + doll.pos + ' .' + tile_bonuses[i] + ' small').text(doll.tile_bonus[tile_bonuses[i]] + '%');
       $('#pos' + doll.pos + ' .' + tile_bonuses[i]).prop('hidden', false);
@@ -1831,8 +1832,8 @@ function updateUIForDoll(index) {
     }
   }
 
-  for (i = 1; i <= 3; i++) {
-    var equipId = doll['equip' + i];
+  for (let i = 1; i <= 3; i++) {
+    let equipId = doll['equip' + i];
     if (equipId == -1) {
       $('#doll' + (index + 1) + ' .equip' + i).removeClass('stars5 stars4 stars3 stars2 stars1');
       $('#doll' + (index + 1) + ' .equip' + i).attr('src', '/static/girlsfrontline/sim/placeholder.png');
@@ -1884,12 +1885,12 @@ function updateUIForFairy() {
 function calculateEquipBonus(dollIndex) {
   echelon[dollIndex].equip_bonus = { fp: 0, acc: 0, eva: 0, rof: 0, critdmg: 0, crit: 0, ap: 0, armor: 0, nightview: 0, rounds: 0 };
 
-  for (var i = 1; i <= 3; i++) {
-    var equipId = echelon[dollIndex]['equip' + i];
+  for (let i = 1; i <= 3; i++) {
+    let equipId = echelon[dollIndex]['equip' + i];
     if (equipId == -1)
       continue;
-    var equip = equipData[equipId - 1];
-    var level = parseInt($('#doll' + (dollIndex + 1) + ' .equip' + i + '-level-select').val());
+    let equip = equipData[equipId - 1];
+    let level = parseInt($('#doll' + (dollIndex + 1) + ' .equip' + i + '-level-select').val());
     echelon[dollIndex].equip_bonus.fp += Math.floor((equip.level_bonus.fp / 10000 * level + 1) * equip.fp);
     echelon[dollIndex].equip_bonus.acc += Math.floor((equip.level_bonus.acc / 10000 * level + 1) * equip.acc);
     echelon[dollIndex].equip_bonus.eva += Math.floor((equip.level_bonus.eva / 10000 * level + 1) * equip.eva);
@@ -1905,35 +1906,35 @@ function calculateEquipBonus(dollIndex) {
 
 function calculateTileBonus() {
   //reset everyone's tile bonus
-  for (var i = 0; i < echelon.length; i++) {
+  for (let i = 0; i < echelon.length; i++) {
     echelon[i].tile_bonus = { fp: 0, acc: 0, eva: 0, rof: 0, crit: 0, skillcd: 0, armor: 0 };
   }
 
   //iterate through all grid squares, checking for a doll
-  var validSquares = [12, 13, 14, 22, 23, 24, 32, 33, 34];
+  let validSquares = [12, 13, 14, 22, 23, 24, 32, 33, 34];
   $.each(validSquares, function (index, value) {
-    var dollIndex = parseInt($('#pos' + value).attr('data-index'));
+    let dollIndex = parseInt($('#pos' + value).attr('data-index'));
     if (dollIndex == -1 || echelon[dollIndex].id == -1) {
       return true;
     }
 
-    var targetSquares = echelon[dollIndex].tiles.target.split(",");
+    let targetSquares = echelon[dollIndex].tiles.target.split(',');
     //iterate through all squares this doll affects
-    for (i = 0; i < targetSquares.length; i++) {
-      var targetSquare = value + parseInt(targetSquares[i]);
+    for (let i = 0; i < targetSquares.length; i++) {
+      let targetSquare = value + parseInt(targetSquares[i]);
       if ($.inArray(targetSquare, validSquares) == -1) {
         continue;
       }
 
-      var targetIndex = $('#pos' + targetSquare).attr('data-index');
+      let targetIndex = $('#pos' + targetSquare).attr('data-index');
       if (targetIndex == -1 || echelon[targetIndex].id == -1) {
         continue;
       }
 
-      var target = echelon[targetIndex];
-      var source = echelon[dollIndex];
+      let target = echelon[targetIndex];
+      let source = echelon[dollIndex];
 
-      var targetReceivesBuff = false;
+      let targetReceivesBuff = false;
       if ($.isArray(source.tiles.target_type)) {
         targetReceivesBuff = $.inArray(target.type, source.tiles.target_type) == -1 ? false : true;
       } else {
@@ -1987,20 +1988,20 @@ function calculateFairyBonus() {
 }
 
 function calculateBaseStats(dollIndex) {
-  var doll = echelon[dollIndex];
-  var data = dollData[doll.id - 1];
-  var level = parseInt($('#doll' + (dollIndex + 1) + ' .doll-level-select').val());
+  let doll = echelon[dollIndex];
+  let data = dollData[doll.id - 1];
+  let level = parseInt($('#doll' + (dollIndex + 1) + ' .doll-level-select').val());
 
   doll.base = dollUtils.getStatsAtLevel(data, level);
 }
 
 function calculatePreBattleStatsForDoll(dollIndex) {
-  var doll = echelon[dollIndex];
+  let doll = echelon[dollIndex];
 
   if (doll.id == -1)
     return;
 
-  var affection_bonus = getAffectionBonus(doll.affection, doll.mod);
+  let affection_bonus = getAffectionBonus(doll.affection, doll.mod);
 
   doll.pre_battle.hp = doll.base.hp * getNumLinks(dollIndex);
   doll.pre_battle.fp = doll.base.fp;
@@ -2075,7 +2076,7 @@ function calculatePreBattleStatsForDoll(dollIndex) {
 }
 
 function calculatePreBattleStatsAllDolls() {
-  for (var i = 0; i < 5; i++) {
+  for (let i = 0; i < 5; i++) {
     calculatePreBattleStatsForDoll(i);
   }
 }
@@ -2085,8 +2086,8 @@ function calculatePreBattleStatsAllDolls() {
 function preBattleSkillChanges(doll) {
   if (doll.id == 192) {
     //strawberry cano probably
-    var effect = doll.battle.skill.effects[0];
-    for (var i = 0; i < 5; i++) {
+    let effect = doll.battle.skill.effects[0];
+    for (let i = 0; i < 5; i++) {
       if (echelon[i].id == -1) {
         continue;
       }
@@ -2098,14 +2099,14 @@ function preBattleSkillChanges(doll) {
 
   if (doll.id == 239) {
     //Jericho
-    var skilleffect = {
-      type: "passive",
-      trigger: "reload",
+    let skilleffect = {
+      type: 'passive',
+      trigger: 'reload',
       effects: [
         {
-          type: "buff",
-          target: "self",
-          name: "jericho",
+          type: 'buff',
+          target: 'self',
+          name: 'jericho',
           stat: {
             fp: 5,
             acc: 5
@@ -2118,10 +2119,10 @@ function preBattleSkillChanges(doll) {
       ]
     };
 
-    var targetSquares = doll.tiles.target.split(",");
+    let targetSquares = doll.tiles.target.split(',');
     targetSquares = targetSquares.map(targetSquare => parseInt(targetSquare));
     targetSquares = targetSquares.map(targetSquare => targetSquare + doll.pos);
-    for (var i = 0; i < 5; i++) {
+    for (let i = 0; i < 5; i++) {
       if (echelon[i].id != -1 && $.inArray(echelon[i].pos, targetSquares) != -1) {
         if (echelon[i].type == 5 || echelon[i].type == 6) { // have to specify mg/sg so it doesn't work on falcon
           echelon[i].battle.passives.push($.extend(true, {}, skilleffect));
@@ -2155,27 +2156,31 @@ function preBattleSkillChanges(doll) {
 
   if (doll.id == 263) {
     //g36mod
-    var buffcount = 0;
-    var tiledoll = echelon.find(d => d.pos == doll.pos + 1);
+    let buffcount = 0;
+
+    // Check right tile
+    let tiledoll = echelon.find(d => d.pos == doll.pos + 1);
     if (tiledoll !== undefined && tiledoll.id != -1) {
       buffcount++;
     }
-    var tiledoll = echelon.find(d => d.pos == doll.pos + 11);
+
+    // Check bottom right tile
+    tiledoll = echelon.find(d => d.pos == doll.pos + 11);
     if (tiledoll !== undefined && tiledoll.id != -1) {
       buffcount++;
     }
-    var buff = {
-      type: "buff",
-      target: "self",
+    let buff = {
+      type: 'buff',
+      target: 'self',
       stat: {
         rof: [5, 6, 6, 7, 7, 8, 8, 9, 9, 10]
       },
       duration: [3, 3.2, 3.4, 3.7, 3.9, 4.1, 4.3, 4.6, 4.8, 5],
-      name: "g36mod",
+      name: 'g36mod',
       stackable: true,
       max_stacks: 2,
       stacks: 1
-    }
+    };
     if (buffcount == 1) {
       doll.battle.skill2.effects.push($.extend({}, buff));
     } else if (buffcount == 2) {
@@ -2185,31 +2190,31 @@ function preBattleSkillChanges(doll) {
   }
 
   if (doll.id == 264) {
-    var reloadbuff = {
-      type: "buff",
-      target: "self",
-      name: "reloadBuff",
+    let reloadbuff = {
+      type: 'buff',
+      target: 'self',
+      name: 'reloadBuff',
       level: doll.skill2level,
       setTime: [5.5, 5.4, 5.4, 5.3, 5.3, 5.2, 5.2, 5.1, 5.1, 5],
       duration: -1
     };
-    var attackbuff = {
-      type: "buff",
-      target: "self",
-      name: "normalAttackBuff",
+    let attackbuff = {
+      type: 'buff',
+      target: 'self',
+      name: 'normalAttackBuff',
       level: doll.skill2level,
       multiplier: [1.25, 1.27, 1.28, 1.3, 1.32, 1.33, 1.35, 1.37, 1.38, 1.4],
       attacksLeft: 3,
       duration: -1
-    }
+    };
     doll.battle.buffs.push(reloadbuff);
     doll.battle.buffs.push(attackbuff);
   }
 
   if (doll.id == 227) {
     //js9
-    var fpstacks = enemyCount > 3 ? 0 : 4 - enemyCount;
-    var evastacks = enemyCount == 1 ? 0 : Math.min(6, enemyCount - 1);
+    let fpstacks = enemyCount > 3 ? 0 : 4 - enemyCount;
+    let evastacks = enemyCount == 1 ? 0 : Math.min(6, enemyCount - 1);
     doll.battle.skill.effects[0].stacks = evastacks;
     doll.battle.skill.effects[1].stacks = fpstacks;
   }
@@ -2241,34 +2246,34 @@ function preBattleSkillChanges(doll) {
 
   if (doll.id == 268) {
     //idw mod3
-    var buff = {
-      type: "buff",
-      target: "self",
+    let buff = {
+      type: 'buff',
+      target: 'self',
       stat: {
         rof: [6, 6, 7, 7, 8, 8, 9, 9, 10, 10],
         fp: [12, 13, 14, 15, 16, 16, 17, 18, 19, 20]
       },
       level: doll.skill2level,
       duration: -1,
-      name: "idwmod",
+      name: 'idwmod',
       stackable: true,
       stacks: 3,
       stacksToAdd: 3,
       max_stacks: 3
-    }
+    };
     doll.battle.buffs.push(buff);
   }
 
   if (doll.id == 256) {
-    if (doll.battle.skill.effects[0].after.target == "self") {
-      var rof = [15, 17, 18, 20, 22, 23, 25, 27, 28, 30];
+    if (doll.battle.skill.effects[0].after.target == 'self') {
+      let rof = [15, 17, 18, 20, 22, 23, 25, 27, 28, 30];
       doll.battle.skill.effects[0].after.stat.rof = rof[doll.skill2level - 1];
     }
   }
 
   if (doll.id == 249) {
     //clear
-    var dollsToBuff = echelon.filter(d => {
+    let dollsToBuff = echelon.filter(d => {
       if (d.id == -1 || d.id == 249) {
         return false;
       } else {
@@ -2278,11 +2283,11 @@ function preBattleSkillChanges(doll) {
     if (dollsToBuff.length == 0) {
       return;
     }
-    var hasEquip = doll.equip1 == 85 ? true : false;
+    let hasEquip = doll.equip1 == 85 ? true : false;
     //hand out all 5 buffs in sequence
-    for (var i = 0; i < 5; i += dollsToBuff.length) {
-      for (var j = 0; j < Math.min(dollsToBuff.length, 5 - i); j++) {
-        doll.battle.skill.effects[i + j + 1].after.target = "doll";
+    for (let i = 0; i < 5; i += dollsToBuff.length) {
+      for (let j = 0; j < Math.min(dollsToBuff.length, 5 - i); j++) {
+        doll.battle.skill.effects[i + j + 1].after.target = 'doll';
         doll.battle.skill.effects[i + j + 1].after.dollid = dollsToBuff[j].id;
         if (hasEquip) {
           doll.battle.skill.effects[i + j + 1].after.stat.fp = [20, 22, 24, 27, 29, 31, 33, 36, 38, 40];
@@ -2294,9 +2299,9 @@ function preBattleSkillChanges(doll) {
 
   if (doll.id == 231) {
     //type88 (mg)
-    var lmgbuff = {
-      type: "buff",
-      target: "self",
+    let lmgbuff = {
+      type: 'buff',
+      target: 'self',
       level: doll.skilllevel,
       stat: {
         acc: [-40, -38, -36, -33, -31, -29, -27, -24, -22, -20]
@@ -2310,44 +2315,44 @@ function preBattleSkillChanges(doll) {
   if (doll.id == 189) {
     //k2
     doll.skill.mode = 'fever';
-    var feverbuff = {
-      type: "buff",
-      target: "self",
-      name: "normalAttackBuff",
+    let feverbuff = {
+      type: 'buff',
+      target: 'self',
+      name: 'normalAttackBuff',
       hitCount: 3,
       multiplier: [0.4, 0.412, 0.424, 0.436, 0.448, 0.46, 0.472, 0.484, 0.496, 0.52],
       duration: -1,
       level: doll.skilllevel
     };
-    var heatbuff = {
-      type: "buff",
-      target: "self",
+    let heatbuff = {
+      type: 'buff',
+      target: 'self',
       duration: -1,
       stackable: true,
       stacks: 1,
       max_stacks: 20,
       stacksToAdd: 1,
-      name: "heat",
+      name: 'heat',
       stat: {
         fp: 0,
         acc: 0
       },
       level: doll.skilllevel
     };
-    var normalAttackPassive = {
-      type: "passive",
-      trigger: "normalAttack",
+    let normalAttackPassive = {
+      type: 'passive',
+      trigger: 'normalAttack',
       level: doll.skilllevel,
       effects: [
         {
-          type: "buff",
-          target: "self",
+          type: 'buff',
+          target: 'self',
           duration: -1,
           stackable: true,
           stacks: 1,
           max_stacks: 20,
           stacksToAdd: 1,
-          name: "heat",
+          name: 'heat',
           stat: {
             fp: 0,
             acc: 0
@@ -2355,34 +2360,34 @@ function preBattleSkillChanges(doll) {
           level: doll.skilllevel
         },
         {
-          type: "modifySkill",
-          modifySkill: "singleEnemyAttackStack"
+          type: 'modifySkill',
+          modifySkill: 'singleEnemyAttackStack'
         }
       ]
     };
-    var hasStacksPassive = {
-      type: "passive",
-      trigger: "hasStacks",
+    let hasStacksPassive = {
+      type: 'passive',
+      trigger: 'hasStacks',
       stacksRequired: 16,
-      name: "heat",
+      name: 'heat',
       level: doll.skilllevel,
       effects: [
         {
-          type: "modifySkill",
-          modifySkill: "changeHeatStats"
+          type: 'modifySkill',
+          modifySkill: 'changeHeatStats'
         }
       ]
     };
-    var notHasStacksPassive = {
-      type: "passive",
-      trigger: "notHasStacks",
+    let notHasStacksPassive = {
+      type: 'passive',
+      trigger: 'notHasStacks',
       stacksRequired: 15,
-      name: "heat",
+      name: 'heat',
       level: doll.skilllevel,
       effects: [
         {
-          type: "modifySkill",
-          modifySkill: "changeHeatStatsDown"
+          type: 'modifySkill',
+          modifySkill: 'changeHeatStatsDown'
         }
       ]
     };
@@ -2395,10 +2400,10 @@ function preBattleSkillChanges(doll) {
 
   if (doll.id == 278) {
     //M200
-    var buff = {
-      type: "buff",
-      name: "normalAttackBuff",
-      target: "self",
+    let buff = {
+      type: 'buff',
+      name: 'normalAttackBuff',
+      target: 'self',
       duration: -1,
       level: doll.skilllevel,
       multiplier: 1.05
@@ -2411,10 +2416,10 @@ function preBattleSkillChanges(doll) {
 
   if (doll.id == 193) {
     //grape cano
-    var buff = {
-      type: "buff",
-      target: "self",
-      name: "grape",
+    let buff = {
+      type: 'buff',
+      target: 'self',
+      name: 'grape',
       duration: -1,
       stackable: true,
       max_stacks: 99,
@@ -2423,10 +2428,10 @@ function preBattleSkillChanges(doll) {
       stackChance: [30, 35, 40, 45, 50, 55, 55, 60, 65, 70],
       level: doll.skilllevel
     };
-    var activeBuff = {
-      type: "buff",
-      target: "self",
-      name: "grape",
+    let activeBuff = {
+      type: 'buff',
+      target: 'self',
+      name: 'grape',
       duration: -1,
       stackable: true,
       max_stacks: 99,
@@ -2444,10 +2449,10 @@ function preBattleSkillChanges(doll) {
 
   if (doll.id == 279) {
     //falcon
-    var normalAttackBuff = {
-      type: "buff",
-      target: "self",
-      name: "normalAttackBuff",
+    let normalAttackBuff = {
+      type: 'buff',
+      target: 'self',
+      name: 'normalAttackBuff',
       multiplier: 1.5,
       level: doll.skilllevel,
       duration: -1
@@ -2464,10 +2469,10 @@ function preBattleSkillChanges(doll) {
 
   //Chauchat
   if (doll.id == 282) {
-    var buff = {
-      type: "buff",
-      target: "self",
-      name: "chauchat",
+    let buff = {
+      type: 'buff',
+      target: 'self',
+      name: 'chauchat',
       duration: -1,
       stackable: true,
       stacks: 1,
@@ -2478,13 +2483,13 @@ function preBattleSkillChanges(doll) {
 
   //mg36
   if (doll.id == 283) {
-    var targetSquares = doll.tiles.target.split(",");
+    let targetSquares = doll.tiles.target.split(',');
     targetSquares = targetSquares.map(targetSquare => parseInt(targetSquare));
     targetSquares = targetSquares.map(targetSquare => targetSquare + doll.pos);
-    var validSquares = [12, 13, 14, 22, 23, 24, 32, 33, 34];
+    let validSquares = [12, 13, 14, 22, 23, 24, 32, 33, 34];
     $.each(targetSquares, (index, targetSquare) => {
       if ($.inArray(targetSquare, validSquares) != -1) {
-        var dollOnTile = echelon.find(d => d.pos == targetSquare);
+        let dollOnTile = echelon.find(d => d.pos == targetSquare);
         if (dollOnTile !== undefined && dollOnTile.id != -1) {
           if (dollOnTile.type == 4) {
             doll.battle.skill.effects[1].stacks++;
@@ -2502,7 +2507,7 @@ function preBattleSkillChanges(doll) {
 
   //stg44 mod3
   if (doll.id == 290) {
-    var grenadeDamageBonus = [1.10, 1.11, 1.12, 1.13, 1.14, 1.16, 1.17, 1.18, 1.19, 1.20];
+    let grenadeDamageBonus = [1.10, 1.11, 1.12, 1.13, 1.14, 1.16, 1.17, 1.18, 1.19, 1.20];
     doll.battle.skill.effects[0].multiplier[doll.skilllevel - 1] *= grenadeDamageBonus[doll.skill2level - 1];
     doll.battle.skill.effects[1].multiplier[doll.skilllevel - 1] *= grenadeDamageBonus[doll.skill2level - 1];
     doll.battle.skill.effects[2].multiplier[doll.skilllevel - 1] *= grenadeDamageBonus[doll.skill2level - 1];
@@ -2517,8 +2522,8 @@ function preBattleSkillChanges(doll) {
   if (doll.id == 292) {
     doll.battle.targets = 1;
     let normalAttack = {
-      type: "buff",
-      name: "normalAttackBuff",
+      type: 'buff',
+      name: 'normalAttackBuff',
       duration: -1,
       multiplier: [1.2, 1.27, 1.33, 1.4, 1.47, 1.53, 1.6, 1.67, 1.73, 1.8],
       level: doll.skilllevel
@@ -2541,8 +2546,8 @@ function preBattleSkillChanges(doll) {
 
     let cooldownBonus = doll.battle.fp > 30 ? 30 : doll.battle.fp;
     let skillcdBuff = {
-      type: "buff",
-      target: "self",
+      type: 'buff',
+      target: 'self',
       level: doll.skilllevel,
       stat: {
         skillcd: cooldownBonus
@@ -2572,8 +2577,8 @@ function preBattleSkillChanges(doll) {
 }
 
 function initDollsForBattle() {
-  for (var i = 0; i < 5; i++) {
-    var doll = echelon[i];
+  for (let i = 0; i < 5; i++) {
+    let doll = echelon[i];
 
     graphData.y.push({});
     graphData.y[i].name = doll.name;
@@ -2663,14 +2668,14 @@ function initDollsForBattle() {
     doll.battle.action_queue = [];
     doll.battle.timers = [];
 
-    var normalAttackTimer = {
+    let normalAttackTimer = {
       type: 'normalAttack',
       timeLeft: 0
     };
     normalAttackTimer.timeLeft = 'frames_per_attack' in doll.battle ? doll.battle.frames_per_attack : Math.floor(50 * 30 / doll.battle.rof);
     doll.battle.timers.push(normalAttackTimer);
 
-    var skillTimer = {
+    let skillTimer = {
       type: 'skill',
       timeLeft: Math.round(doll.battle.skill.icd * 30 * (1 - doll.pre_battle.skillcd / 100))
     };
@@ -2681,23 +2686,23 @@ function initDollsForBattle() {
     if (doll.mod) {
       doll.battle.skill2 = $.extend(true, {}, doll.skill2);
       doll.battle.skill2.effects = getUsableSkillEffects(doll.battle.skill2.effects);
-      var skill2Timer = {
+      let skill2Timer = {
         type: 'skill2',
         timeLeft: Math.round(doll.battle.skill2.icd * 30 * (1 - doll.pre_battle.skillcd / 100))
-      }
+      };
       if (doll.useSkill) {
         doll.battle.timers.push(skill2Timer);
       }
     }
   }
 
-  for (i = 0; i < 5; i++) {
+  for (let i = 0; i < 5; i++) {
     preBattleSkillChanges(echelon[i]);
   }
 }
 
 function initEnemyForBattle() {
-  var enemy = {
+  let enemy = {
     count: enemyCount,
     eva: enemyEva,
     armor: enemyArmor,
@@ -2735,7 +2740,7 @@ function initiFairyForBattle() {
   fairy.battle.effect_queue = [];
   fairy.battle.action_queue = [];
 
-  var skilltimer = {
+  let skilltimer = {
     type: 'skill',
     timeLeft: fairy.battle.skill.icd == 0 ? 1 : Math.round(fairy.battle.skill.icd * 30)
   };
@@ -2748,19 +2753,19 @@ function simulateBattle() {
   graphData = { x: [], y: [] };
 
   initDollsForBattle();
-  var enemy = initEnemyForBattle();
+  let enemy = initEnemyForBattle();
   initiFairyForBattle();
-  var simulationLength = 30 * battleLength;
-  var totaldamage8s = 0;
-  var totaldamage20s = 0;
+  let simulationLength = 30 * battleLength;
+  let totaldamage8s = 0;
+  let totaldamage20s = 0;
 
   //apply fairy talent effect to dolls
   if (fairy.id != -1) {
-    var talenteffect = $.extend(true, {}, fairy.talent.effect);
+    let talenteffect = $.extend(true, {}, fairy.talent.effect);
     talenteffect.level = fairy.rarity;
     if (talenteffect.type == 'passive') {
       $.each(talenteffect.effects, (i, effect) => effect.level = fairy.rarity);
-      for (var i = 0; i < 5; i++) {
+      for (let i = 0; i < 5; i++) {
         if (echelon[i].id != -1) {
           talenteffect.startTime = 1;
           echelon[i].battle.passives.push($.extend(true, {}, talenteffect));
@@ -2768,17 +2773,17 @@ function simulateBattle() {
       }
       if (fairy.talent.id == 17) { //fervor
         let initialFervorStack = {
-          type: "buff",
-          target: "all",
+          type: 'buff',
+          target: 'all',
           stat: {
             fp: 10
           },
           duration: -1,
-          name: "fairytalent",
+          name: 'fairytalent',
           stackable: true,
           stacks: 1,
           max_stacks: 3
-        }
+        };
         activateBuff(fairy, initialFervorStack, enemy);
       }
     } else if (talenteffect.type == 'buff') {
@@ -2789,9 +2794,9 @@ function simulateBattle() {
   //apply fortress node effect
   if (useFortressNode) {
     if (fairy.id != 24 || (fairy.id == 24 && !fairy.useSkill)) { //sue skill overrides fortress node
-      for (var i = 0; i < 5; i++) {
+      for (let i = 0; i < 5; i++) {
         if (echelon[i].id != -1) {
-          var fortressbuff = $.extend(true, {}, fairyData[13].skill.effects[0]);
+          let fortressbuff = $.extend(true, {}, fairyData[13].skill.effects[0]);
           fortressbuff.level = fortressNodeLevel;
           echelon[i].battle.buffs.push(fortressbuff);
         }
@@ -2802,7 +2807,8 @@ function simulateBattle() {
 
   //walk time
   graphData.x.push(0);
-  for (var time = 1; time < walkTime * 30; time++) {
+  let time = 0;
+  for (time = 1; time < walkTime * 30; time++) {
     graphData.x.push(parseFloat((time / 30.0).toFixed(2)));
 
     if (fairy.id != -1) {
@@ -2814,9 +2820,9 @@ function simulateBattle() {
       });
     }
 
-    for (var i = 0; i < 5; i++) {
+    for (let i = 0; i < 5; i++) {
       graphData.y[i].data.push(graphData.y[i].data[time - 1]);
-      var doll = echelon[i];
+      let doll = echelon[i];
       if (doll.id == -1) continue;
 
       $.each(doll.battle.timers, (index, timer) => {
@@ -2868,7 +2874,7 @@ function simulateBattle() {
 
       //tick and trigger time-based passives
       $.each(doll.battle.passives.filter(passive => 'interval' in passive), (index, passiveskill) => {
-        var interval = $.isArray(passiveskill.interval) ? passiveskill.interval[passiveskill.level - 1] : passiveskill.interval;
+        let interval = $.isArray(passiveskill.interval) ? passiveskill.interval[passiveskill.level - 1] : passiveskill.interval;
         if ((time - passiveskill.startTime) % Math.floor(interval * 30) == 0 && time != 1 && interval != -1) {
           triggerPassive('time', doll, enemy);
         }
@@ -2882,19 +2888,20 @@ function simulateBattle() {
 
 
   graphData.x.push((time / 30.0).toFixed(2));
-  for (var currentFrame = time; currentFrame < simulationLength; currentFrame++) {
+  let currentFrame = time;
+  for (currentFrame = time; currentFrame < simulationLength; currentFrame++) {
     graphData.x.push(parseFloat((currentFrame / 30.0).toFixed(2)));
 
     //tick timers, queue actions
-    for (var i = 0; i < 5; i++) {
-      var doll = echelon[i];
+    for (let i = 0; i < 5; i++) {
+      let doll = echelon[i];
       if (doll.id == -1) continue;
 
       graphData.y[i].data.push(graphData.y[i].data[currentFrame - 1]);
 
       $.each(doll.battle.timers, (index, timer) => {
         if (timer.type == 'normalAttack') {
-          var reloading = doll.battle.timers.find(timer => timer.type == 'reload') === undefined ? false : true;
+          let reloading = doll.battle.timers.find(timer => timer.type == 'reload') === undefined ? false : true;
           if (doll.links - doll.battle.busylinks > 0 && !reloading) {
             timer.timeLeft--;
           }
@@ -2905,7 +2912,7 @@ function simulateBattle() {
 
       $.each(doll.battle.timers, (index, timer) => {
         if (timer.timeLeft == 0) {
-          var reloading = doll.battle.timers.find(timer => timer.type == 'reload') === undefined ? false : true;
+          let reloading = doll.battle.timers.find(timer => timer.type == 'reload') === undefined ? false : true;
           if (timer.type == 'skill') {
             if (reloading && doll.battle.timers.find(timer => timer.type == 'reload').timeLeft != 0) {
               timer.timeLeft++;
@@ -2915,7 +2922,7 @@ function simulateBattle() {
                   effect.level = doll.skilllevel;
                 }
                 if (effect.type == 'loadRounds') {
-                  var targets = getBuffTargets(doll, effect, enemy);
+                  let targets = getBuffTargets(doll, effect, enemy);
                   $.each(targets, (index, target) => {
                     target.battle.currentRounds += $.isArray(effect.rounds) ? effect.rounds[effect.level - 1] : effect.rounds;
                   });
@@ -2934,7 +2941,7 @@ function simulateBattle() {
                   effect.level = doll.skill2level;
                 }
                 if (effect.type == 'loadRounds') {
-                  var targets = getBuffTargets(doll, effect, enemy);
+                  let targets = getBuffTargets(doll, effect, enemy);
                   $.each(targets, (index, target) => {
                     target.battle.currentRounds += $.isArray(effect.rounds) ? effect.rounds[effect.level - 1] : effect.rounds;
                   });
@@ -2995,7 +3002,7 @@ function simulateBattle() {
 
       //tick and trigger time-based passives
       $.each(doll.battle.passives.filter(passive => 'interval' in passive), (index, passiveskill) => {
-        var interval = $.isArray(passiveskill.interval) ? passiveskill.interval[passiveskill.level - 1] : passiveskill.interval;
+        let interval = $.isArray(passiveskill.interval) ? passiveskill.interval[passiveskill.level - 1] : passiveskill.interval;
         if ((currentFrame - passiveskill.startTime) % Math.floor(interval * 30) == 0 && currentFrame != 1 && interval != -1) {
           triggerPassive('time', doll, enemy);
         }
@@ -3004,7 +3011,7 @@ function simulateBattle() {
 
     //tick fairy skill timer
     if (fairy.id != -1) {
-      graphData.y[5].data.push(graphData.y[i].data[currentFrame - 1]);
+      graphData.y[5].data.push(graphData.y[5].data[currentFrame - 1]);
       $.each(fairy.battle.timers, (index, timer) => timer.timeLeft--);
       $.each(fairy.battle.timers, (index, timer) => {
         if (timer.timeLeft == 0) {
@@ -3037,13 +3044,13 @@ function simulateBattle() {
 
 
     //apply buffs, handle effects that aren't actions
-    for (i = 0; i < 5; i++) {
-      doll = echelon[i];
+    for (let i = 0; i < 5; i++) {
+      let doll = echelon[i];
       if (doll.id == -1) continue;
 
-      var len = doll.battle.effect_queue.length;
-      for (var j = 0; j < len; j++) {
-        var action = doll.battle.effect_queue.shift();
+      let len = doll.battle.effect_queue.length;
+      for (let j = 0; j < len; j++) {
+        let action = doll.battle.effect_queue.shift();
 
         if (action.type == 'buff') {
           activateBuff(doll, action, enemy);
@@ -3071,9 +3078,9 @@ function simulateBattle() {
     }
 
     if (fairy.id != -1) {
-      var len = fairy.battle.effect_queue.length;
-      for (var j = 0; j < len; j++) {
-        var action = fairy.battle.effect_queue.shift();
+      let len = fairy.battle.effect_queue.length;
+      for (let j = 0; j < len; j++) {
+        let action = fairy.battle.effect_queue.shift();
 
         if (action.type == 'buff') {
           activateBuff(fairy, action, enemy);
@@ -3084,7 +3091,7 @@ function simulateBattle() {
     }
 
     //recalculate stats to include all buffs
-    for (i = 0; i < 5; i++) {
+    for (let i = 0; i < 5; i++) {
       if (echelon[i].id != -1) {
         calculateSkillBonus(i);
         calculateBattleStats(i);
@@ -3094,22 +3101,22 @@ function simulateBattle() {
 
 
     //perform actions
-    for (i = 0; i < 5; i++) {
-      doll = echelon[i];
+    for (let i = 0; i < 5; i++) {
+      let doll = echelon[i];
       if (doll.id == -1) continue;
 
-      var dmg = 0;
+      let dmg = 0;
 
-      len = doll.battle.action_queue.length;
-      for (j = 0; j < len; j++) {
-        action = doll.battle.action_queue.shift();
+      let len = doll.battle.action_queue.length;
+      for (let j = 0; j < len; j++) {
+        let action = doll.battle.action_queue.shift();
 
         if (action.type == 'normalAttack') {
-          var attackBuff = doll.battle.buffs.find(buff => buff.name == 'normalAttackBuff');
+          let attackBuff = doll.battle.buffs.find(buff => buff.name == 'normalAttackBuff');
           if (attackBuff !== undefined) {
-            var canCrit = 'canCrit' in attackBuff ? attackBuff.canCrit : true;
-            var sureCrit = 'sureCrit' in attackBuff ? attackBuff.sureCrit : false;
-            var sureHit = 'sureHit' in attackBuff ? attackBuff.sureHit : false;
+            let canCrit = 'canCrit' in attackBuff ? attackBuff.canCrit : true;
+            let sureCrit = 'sureCrit' in attackBuff ? attackBuff.sureCrit : false;
+            let sureHit = 'sureHit' in attackBuff ? attackBuff.sureHit : false;
 
             dmg = Math.max(1, doll.battle.fp + Math.min(2, doll.battle.ap - enemy.battle.armor));
             if (!sureHit) {
@@ -3141,7 +3148,7 @@ function simulateBattle() {
             }
 
             if ('aoe' in attackBuff) {
-              var damage = Math.max(1, doll.battle.fp + Math.min(2, doll.battle.ap - enemy.battle.armor));
+              let damage = Math.max(1, doll.battle.fp + Math.min(2, doll.battle.ap - enemy.battle.armor));
               // damage *= (doll.battle.acc / (doll.battle.acc + enemy.battle.eva));
               if ('aoe_multiplier' in attackBuff) {
                 damage *= $.isArray(attackBuff.aoe_multiplier) ? attackBuff.aoe_multiplier[attackBuff.level - 1] : attackBuff.aoe_multiplier;
@@ -3167,19 +3174,19 @@ function simulateBattle() {
           }
 
           //handle pkp
-          var extradmg = 0;
-          var afterAttack = doll.battle.passives.find(passive => passive.trigger == 'afterAttack');
+          let extradmg = 0;
+          let afterAttack = doll.battle.passives.find(passive => passive.trigger == 'afterAttack');
           if (afterAttack !== undefined) {
-            var extraAttack = afterAttack.effects[0];
-            var canCrit = 'canCrit' in extraAttack ? extraAttack.canCrit : true;
-            var sureCrit = 'sureCrit' in extraAttack ? extraAttack.sureCrit : false;
-            var sureHit = 'sureHit' in extraAttack ? extraAttack.sureHit : false;
+            let extraAttack = afterAttack.effects[0];
+            let canCrit = 'canCrit' in extraAttack ? extraAttack.canCrit : true;
+            let sureCrit = 'sureCrit' in extraAttack ? extraAttack.sureCrit : false;
+            let sureHit = 'sureHit' in extraAttack ? extraAttack.sureHit : false;
 
             let extraAttackFP = doll.battle.fp;
             if ('multiplier' in extraAttack) {
               extraAttackFP *= $.isArray(extraAttack.multiplier) ? extraAttack.multiplier[extraAttack.level - 1] : extraAttack.multiplier;
             }
-            var extradmg = Math.max(1, extraAttackFP + Math.min(2, doll.battle.ap - enemy.battle.armor));
+            let extradmg = Math.max(1, extraAttackFP + Math.min(2, doll.battle.ap - enemy.battle.armor));
 
             /* pretty sure the multiplier for all skills are applied to fp directly
             if ('multiplier' in extraAttack) {
@@ -3198,7 +3205,7 @@ function simulateBattle() {
 
             extradmg *= enemy.battle.vulnerability;
             extradmg *= doll.links - doll.battle.busylinks;
-            extradmg *= 'extraAttackChance' in extraAttack ? extraAttack.extraAttackChance[extraAttack.level - 1] / 100 : 1
+            extradmg *= 'extraAttackChance' in extraAttack ? extraAttack.extraAttackChance[extraAttack.level - 1] / 100 : 1;
           }
           dmg += extradmg;
 
@@ -3210,7 +3217,7 @@ function simulateBattle() {
             }
 
             if (doll.battle.currentRounds == 0) {
-              var reloadTimer = {
+              let reloadTimer = {
                 type: 'reload',
                 timeLeft: 0
               };
@@ -3225,7 +3232,7 @@ function simulateBattle() {
                 reloadTimer.timeLeft = Math.floor(30 * (120 / (doll.battle.rof + 10))) + 30;
               }
 
-              var reloadBuff = doll.battle.buffs.find(buff => buff.name == 'reloadBuff');
+              let reloadBuff = doll.battle.buffs.find(buff => buff.name == 'reloadBuff');
               if (reloadBuff !== undefined) {
                 if ('fixedTime' in reloadBuff) {
                   reloadTimer.timeLeft += $.isArray(reloadBuff.fixedTime) ? Math.floor(reloadBuff.fixedTime[reloadBuff.level - 1] * 30) : Math.floor(30 * reloadBuff.fixedTime);
@@ -3260,7 +3267,7 @@ function simulateBattle() {
           }
 
           // TODO: add check for reloadtimer. if exists, do not add normalattacktimer <- why???
-          var normalAttackTimer = {
+          let normalAttackTimer = {
             type: 'normalAttack',
             timeLeft: 0
           };
@@ -3273,7 +3280,7 @@ function simulateBattle() {
           doll.battle.numAttacks++;
 
 
-          var limitedAttackBuffs = doll.battle.buffs.filter(buff => 'attacksLeft' in buff);
+          let limitedAttackBuffs = doll.battle.buffs.filter(buff => 'attacksLeft' in buff);
           $.each(limitedAttackBuffs, (index, buff) => buff.attacksLeft--);
           doll.battle.buffs = doll.battle.buffs.filter(buff => {
             if ('attacksLeft' in buff) {
@@ -3284,7 +3291,7 @@ function simulateBattle() {
             return true;
           });
 
-          var limitedAttackPassives = doll.battle.passives.filter(passive => 'attacksLeft' in passive);
+          let limitedAttackPassives = doll.battle.passives.filter(passive => 'attacksLeft' in passive);
           $.each(limitedAttackPassives, (index, passive) => passive.attacksLeft--);
           doll.battle.passives = doll.battle.passives.filter(passive => {
             if ('attacksLeft' in passive) {
@@ -3298,7 +3305,7 @@ function simulateBattle() {
           triggerPassive('normalAttack', doll, enemy);
 
           $.each(doll.battle.passives.filter(p => p.trigger == 'everyXhits'), (index, passive) => {
-            var hits = $.isArray(passive.hits) ? passive.hits[passive.level - 1] : passive.hits;
+            let hits = $.isArray(passive.hits) ? passive.hits[passive.level - 1] : passive.hits;
             if (doll.battle.numAttacks % hits == 0 && hits != -1) {
               triggerPassive('everyXhits', doll, enemy);
             }
@@ -3333,9 +3340,9 @@ function simulateBattle() {
             }
           }
 
-          var sureHit = 'sureHit' in action ? action.sureHit : true;
-          var canCrit = 'canCrit' in action ? action.canCrit : false;
-          var ignoreArmor = 'ignoreArmor' in action ? action.ignoreArmor : true;
+          let sureHit = 'sureHit' in action ? action.sureHit : true;
+          let canCrit = 'canCrit' in action ? action.canCrit : false;
+          let ignoreArmor = 'ignoreArmor' in action ? action.ignoreArmor : true;
 
           if (!('multiplier' in action)) {
             dmg = doll.battle.fp;
@@ -3353,7 +3360,7 @@ function simulateBattle() {
           }
 
           dmg *= enemy.battle.vulnerability;
-          var hits = Math.min(action.radius * 1.5, enemy.count); //num enemy echelons hit
+          let hits = Math.min(action.radius * 1.5, enemy.count); //num enemy echelons hit
 
           if (hits >= 3) {
             triggerPassive('hit3ormore', doll, enemy);
@@ -3409,7 +3416,7 @@ function simulateBattle() {
             //grenades cant miss
             //grenades cant crit
             dmg *= enemy.battle.vulnerability;
-            var hits = Math.min(action.radius * 1.5, enemy.count); //num enemy echelons hit
+            let hits = Math.min(action.radius * 1.5, enemy.count); //num enemy echelons hit
             if ('fixedDamage' in action) {
               dmg = $.isArray(action.fixedDamage) ? action.fixedDamage[action.level - 1] : action.fixedDamage;
             }
@@ -3465,9 +3472,9 @@ function simulateBattle() {
           }
 
           //unless specified, charged shots cannot miss and cannot crit and ignore armor
-          var sureHit = 'sureHit' in action ? action.sureHit : true;
-          var canCrit = 'canCrit' in action ? action.canCrit : false;
-          var ignoreArmor = 'ignoreArmor' in action ? action.ignoreArmor : true;
+          let sureHit = 'sureHit' in action ? action.sureHit : true;
+          let canCrit = 'canCrit' in action ? action.canCrit : false;
+          let ignoreArmor = 'ignoreArmor' in action ? action.ignoreArmor : true;
 
           dmg = $.isArray(action.multiplier) ? doll.battle.fp * action.multiplier[action.level - 1] : doll.battle.fp * action.multiplier;
           if (!('multiplier' in action)) {
@@ -3489,7 +3496,7 @@ function simulateBattle() {
             dmg *= enemy.count + 1;
           }
           if ('skillDamageBonus' in action) {
-            var skillbonus = $.isArray(action.skillDamageBonus) ? 1 + (action.skillDamageBonus[action.level - 1] / 100) : 1 + (action.skillDamageBonus / 100);
+            let skillbonus = $.isArray(action.skillDamageBonus) ? 1 + (action.skillDamageBonus[action.level - 1] / 100) : 1 + (action.skillDamageBonus / 100);
             if ('victories' in action) {
               skillbonus = Math.pow(skillbonus, action.victories);
             }
@@ -3531,8 +3538,8 @@ function simulateBattle() {
             }
           }
 
-          var sureHit = 'sureHit' in action ? action.sureHit : true;
-          var canCrit = 'canCrit' in action ? action.canCrit : true;
+          let sureHit = 'sureHit' in action ? action.sureHit : true;
+          let canCrit = 'canCrit' in action ? action.canCrit : true;
 
           dmg = $.isArray(action.multiplier) ? doll.battle.fp * action.multiplier[action.level - 1] : doll.battle.fp * action.multiplier;
           dmg = Math.max(1, dmg + Math.min(2, doll.battle.ap - enemy.battle.armor));
@@ -3575,10 +3582,10 @@ function simulateBattle() {
     }
 
     if (fairy.id != -1 && echelon.find(d => d.id != -1) !== undefined) {
-      var len = fairy.battle.action_queue.length;
-      var dmg = 0;
-      for (var j = 0; j < len; j++) {
-        var action = fairy.battle.action_queue.shift();
+      let len = fairy.battle.action_queue.length;
+      let dmg = 0;
+      for (let j = 0; j < len; j++) {
+        let action = fairy.battle.action_queue.shift();
 
         if (action.type == 'chargedshot') {
           dmg = $.isArray(action.damage) ? action.damage[action.level - 1] : action.damage;
@@ -3597,9 +3604,9 @@ function simulateBattle() {
           dmg = $.isArray(action.damage) ? action.damage[action.level - 1] : action.damage;
           dmg *= enemy.battle.vulnerability;
 
-          var hits = Math.min(action.radius * 1.5, enemy.count);
+          let hits = Math.min(action.radius * 1.5, enemy.count);
           if (action.radius == 0) {
-            hits = enemy.count
+            hits = enemy.count;
           }
 
           if (!isBoss) {
@@ -3622,7 +3629,7 @@ function simulateBattle() {
             dmg = $.isArray(action.damage) ? action.damage[action.level - 1] : action.damage;
             dmg *= enemy.battle.vulnerability;
 
-            var hits = Math.min(action.radius * 1.5, enemy.count);
+            let hits = Math.min(action.radius * 1.5, enemy.count);
             if (!isBoss) {
               dmg *= hits * 5; //5 enemies per enemy echelon
             }
@@ -3642,15 +3649,12 @@ function simulateBattle() {
         }
       }
     }
-
-
-
   }
 
   $('#dmg-8s').text(Math.round(totaldamage8s));
   $('#dmg-20s').text(Math.round(totaldamage20s));
 
-  for (i = 0; i < 5; i++) {
+  for (let i = 0; i < 5; i++) {
     if (echelon[i].id == -1) {
       continue;
     }
@@ -3675,7 +3679,7 @@ function simulateBattle() {
 }
 
 function calculateSkillBonus(dollIndex) {
-  var doll = echelon[dollIndex];
+  let doll = echelon[dollIndex];
 
   doll.battle.skillbonus = {
     fp: 1,
@@ -3693,21 +3697,21 @@ function calculateSkillBonus(dollIndex) {
   $.each(doll.battle.buffs, (index, buff) => {
     if ('stat' in buff) {
       $.each(buff.stat, (stat, amount) => {
-        var bonus = 1;
+        let bonus = 1;
         if ('stackable' in buff) {
           if (stat == 'rounds' || stat == 'skillcd') {
             bonus = $.isArray(amount) ? amount[buff.level - 1] * buff.stacks : amount * buff.stacks;
             doll.battle.skillbonus[stat] += bonus;
           } else {
             if ('stackChance' in buff) {
-              for (var i = 0; i < buff.stacks; i++) {
+              for (let i = 0; i < buff.stacks; i++) {
                 bonus = $.isArray(buff.stackChance) ? buff.stackChance[buff.level - 1] / 100 : buff.stackChance / 100;
                 bonus *= $.isArray(amount) ? amount[buff.level - 1] / 100 : amount / 100;
                 bonus += 1;
                 doll.battle.skillbonus[stat] *= bonus;
               }
             } else {
-              for (var i = 0; i < buff.stacks; i++) {
+              for (let i = 0; i < buff.stacks; i++) {
                 bonus = $.isArray(amount) ? amount[buff.level - 1] / 100 : amount / 100;
                 bonus += 1;
                 doll.battle.skillbonus[stat] *= bonus;
@@ -3733,7 +3737,7 @@ function calculateSkillBonus(dollIndex) {
 }
 
 function calculateBattleStats(dollIndex) {
-  var doll = echelon[dollIndex];
+  let doll = echelon[dollIndex];
   doll.battle.fp = doll.pre_battle.fp * doll.battle.skillbonus.fp;
   doll.battle.acc = Math.floor(doll.pre_battle.acc * doll.battle.skillbonus.acc);
   doll.battle.eva = Math.floor(doll.pre_battle.eva * doll.battle.skillbonus.eva);
@@ -3815,7 +3819,7 @@ function calculateEnemyStats(enemy) {
 }
 
 function activateBuff(doll, buff, enemy) {
-  var targets = getBuffTargets(doll, buff, enemy);
+  let targets = getBuffTargets(doll, buff, enemy);
 
   buff.timeLeft = $.isArray(buff.duration) ? Math.floor(buff.duration[buff.level - 1] * 30) : Math.floor(buff.duration * 30);
   $.each(targets, (index, target) => {
@@ -3829,7 +3833,7 @@ function activateBuff(doll, buff, enemy) {
       target.battle.buffs.push($.extend({}, buff));
     }
     if ('stat' in buff && doll.name != 'Python' && !('triggerPythonPassive' in buff)) {
-      var triggerChance = 'stackChance' in buff ? buff.stackChance : undefined;
+      let triggerChance = 'stackChance' in buff ? buff.stackChance : undefined;
       if ('fp' in buff.stat) {
         triggerPassive('receivefp', target, enemy, triggerChance);
       }
@@ -3854,17 +3858,17 @@ function triggerPassive(trigger, doll, enemy, triggerChance = undefined) {
     return;
   }
 
-  var passives = doll.battle.passives.filter(passive => passive.trigger == trigger);
+  let passives = doll.battle.passives.filter(passive => passive.trigger == trigger);
   $.each(passives, (index, passive) => {
     $.each(passive.effects, (j, effect) => {
       if (effect.type == 'buff') {
-        var buff = $.extend(true, {}, effect);
+        let buff = $.extend(true, {}, effect);
         if (triggerChance != undefined) {
           buff.stackChance = triggerChance;
         }
         activateBuff(doll, buff, enemy);
       } else if (effect.type == 'loadRounds') {
-        var targets = getBuffTargets(doll, effect, enemy);
+        let targets = getBuffTargets(doll, effect, enemy);
         $.each(targets, (index, target) => {
           target.battle.currentRounds += $.isArray(effect.rounds) ? effect.rounds[effect.level - 1] : effect.rounds;
         });
@@ -3876,10 +3880,10 @@ function triggerPassive(trigger, doll, enemy, triggerChance = undefined) {
 }
 
 function getBuffTargets(doll, buff, enemy) {
-  var targets = [];
+  let targets = [];
 
   if (buff.target == 'all') {
-    for (var i = 0; i < 5; i++) {
+    for (let i = 0; i < 5; i++) {
       if (echelon[i].id != -1) {
         targets.push(echelon[i]);
       }
@@ -3895,10 +3899,10 @@ function getBuffTargets(doll, buff, enemy) {
   }
 
   if (buff.target == 'tiles') {
-    var targetSquares = doll.tiles.target.split(",");
+    let targetSquares = doll.tiles.target.split(',');
     targetSquares = targetSquares.map(targetSquare => parseInt(targetSquare));
     targetSquares = targetSquares.map(targetSquare => targetSquare + doll.pos);
-    for (var i = 0; i < 5; i++) {
+    for (let i = 0; i < 5; i++) {
       if (echelon[i].id != -1 && $.inArray(echelon[i].pos, targetSquares) != -1) {
         targets.push(echelon[i]);
       }
@@ -3906,10 +3910,10 @@ function getBuffTargets(doll, buff, enemy) {
   }
 
   if (buff.target == 'selfandtiles') {
-    var targetSquares = doll.tiles.target.split(",");
+    let targetSquares = doll.tiles.target.split(',');
     targetSquares = targetSquares.map(targetSquare => parseInt(targetSquare));
     targetSquares = targetSquares.map(targetSquare => targetSquare + doll.pos);
-    for (var i = 0; i < 5; i++) {
+    for (let i = 0; i < 5; i++) {
       if (echelon[i].id != -1 && $.inArray(echelon[i].pos, targetSquares) != -1) {
         targets.push(echelon[i]);
       }
@@ -3918,10 +3922,10 @@ function getBuffTargets(doll, buff, enemy) {
   }
 
   if (buff.target == 'tilesHGSMG') {
-    var targetSquares = doll.tiles.target.split(",");
+    let targetSquares = doll.tiles.target.split(',');
     targetSquares = targetSquares.map(targetSquare => parseInt(targetSquare));
     targetSquares = targetSquares.map(targetSquare => targetSquare + doll.pos);
-    for (var i = 0; i < 5; i++) {
+    for (let i = 0; i < 5; i++) {
       if (echelon[i].id != -1 && $.inArray(echelon[i].pos, targetSquares) != -1) {
         if (echelon[i].type == 1 || echelon[i].type == 2) {
           targets.push(echelon[i]);
@@ -3931,10 +3935,10 @@ function getBuffTargets(doll, buff, enemy) {
   }
 
   if (buff.target == 'tilesARRF') {
-    var targetSquares = doll.tiles.target.split(",");
+    let targetSquares = doll.tiles.target.split(',');
     targetSquares = targetSquares.map(targetSquare => parseInt(targetSquare));
     targetSquares = targetSquares.map(targetSquare => targetSquare + doll.pos);
-    for (var i = 0; i < 5; i++) {
+    for (let i = 0; i < 5; i++) {
       if (echelon[i].id != -1 && $.inArray(echelon[i].pos, targetSquares) != -1) {
         if (echelon[i].type == 4 || echelon[i].type == 3) {
           targets.push(echelon[i]);
@@ -3944,10 +3948,10 @@ function getBuffTargets(doll, buff, enemy) {
   }
 
   if (buff.target == 'tilesSGMG') {
-    var targetSquares = doll.tiles.target.split(",");
+    let targetSquares = doll.tiles.target.split(',');
     targetSquares = targetSquares.map(targetSquare => parseInt(targetSquare));
     targetSquares = targetSquares.map(targetSquare => targetSquare + doll.pos);
-    for (var i = 0; i < 5; i++) {
+    for (let i = 0; i < 5; i++) {
       if (echelon[i].id != -1 && $.inArray(echelon[i].pos, targetSquares) != -1) {
         if (echelon[i].type == 6 || echelon[i].type == 5) {
           targets.push(echelon[i]);
@@ -3957,9 +3961,9 @@ function getBuffTargets(doll, buff, enemy) {
   }
 
   if (buff.target == 'column') {
-    var col = [-20, -10, 10, 20];
+    let col = [-20, -10, 10, 20];
     $.each(col, (index, distance) => {
-      var target = echelon.find(d => d.pos == doll.pos + distance && d.id != -1);
+      let target = echelon.find(d => d.pos == doll.pos + distance && d.id != -1);
       if (target !== undefined) {
         targets.push(target);
       }
@@ -3967,14 +3971,14 @@ function getBuffTargets(doll, buff, enemy) {
   }
 
   if (buff.target == 'front') {
-    var dollInFront = echelon.find(d => d.pos == doll.pos + 1);
+    let dollInFront = echelon.find(d => d.pos == doll.pos + 1);
     if (dollInFront !== undefined && dollInFront.id != -1) {
       targets.push(dollInFront);
     }
   }
 
   if (buff.target == 'frontrow') {
-    var dollInFront = echelon.find(d => d.pos == 14);
+    let dollInFront = echelon.find(d => d.pos == 14);
     if (dollInFront !== undefined && dollInFront.id != -1) {
       targets.push(dollInFront);
     }
@@ -3989,7 +3993,7 @@ function getBuffTargets(doll, buff, enemy) {
   }
 
   if (buff.target == 'middlerow') {
-    var dollInMiddle = echelon.find(d => d.pos == 13);
+    let dollInMiddle = echelon.find(d => d.pos == 13);
     if (dollInMiddle !== undefined && dollInMiddle.id != -1) {
       targets.push(dollInMiddle);
     }
@@ -4004,7 +4008,7 @@ function getBuffTargets(doll, buff, enemy) {
   }
 
   if (buff.target == 'backrow') {
-    var dollInBack = echelon.find(d => d.pos == 12);
+    let dollInBack = echelon.find(d => d.pos == 12);
     if (dollInBack !== undefined && dollInBack.id != -1) {
       targets.push(dollInBack);
     }
@@ -4019,34 +4023,34 @@ function getBuffTargets(doll, buff, enemy) {
   }
 
   if (buff.target == 'doll') {
-    var t = echelon.find(doll => doll.id == buff.dollid);
+    let t = echelon.find(doll => doll.id == buff.dollid);
     if (t !== undefined) {
       targets.push(t);
     }
   }
 
   if (buff.target == 'hg') {
-    var allHG = echelon.filter(d => d.id != -1 && d.type == 1);
+    let allHG = echelon.filter(d => d.id != -1 && d.type == 1);
     $.each(allHG, (index, hg) => targets.push(hg));
   }
   if (buff.target == 'smg') {
-    var allSMG = echelon.filter(d => d.id != -1 && d.type == 2);
+    let allSMG = echelon.filter(d => d.id != -1 && d.type == 2);
     $.each(allSMG, (index, smg) => targets.push(smg));
   }
   if (buff.target == 'rf') {
-    var allRF = echelon.filter(d => d.id != -1 && d.type == 3);
+    let allRF = echelon.filter(d => d.id != -1 && d.type == 3);
     $.each(allRF, (index, rf) => targets.push(rf));
   }
   if (buff.target == 'ar') {
-    var allAR = echelon.filter(d => d.id != -1 && d.type == 4);
+    let allAR = echelon.filter(d => d.id != -1 && d.type == 4);
     $.each(allAR, (index, ar) => targets.push(ar));
   }
   if (buff.target == 'mg') {
-    var allMG = echelon.filter(d => d.id != -1 && d.type == 5);
+    let allMG = echelon.filter(d => d.id != -1 && d.type == 5);
     $.each(allMG, (index, mg) => targets.push(mg));
   }
   if (buff.target == 'sg') {
-    var allSG = echelon.filter(d => d.id != -1 && d.type == 6);
+    let allSG = echelon.filter(d => d.id != -1 && d.type == 6);
     $.each(allSG, (index, sg) => targets.push(sg));
   }
 
@@ -4054,7 +4058,7 @@ function getBuffTargets(doll, buff, enemy) {
 }
 
 function addStack(target, effect, enemy) {
-  var buff = target.battle.buffs.find(buff => buff.name == effect.name);
+  let buff = target.battle.buffs.find(buff => buff.name == effect.name);
   if ('stacksToAdd' in effect) {
     buff.stacks += $.isArray(effect.stacksToAdd) ? effect.stacksToAdd[effect.level - 1] : effect.stacksToAdd;
   } else {
@@ -4064,17 +4068,17 @@ function addStack(target, effect, enemy) {
     buff.stacks = buff.stacks > buff.max_stacks ? buff.max_stacks : buff.stacks;
   }
   buff.stacks = Math.max(0, buff.stacks);
-  var refresh = 'refreshduration' in buff ? buff.refreshduration : true; //buff = original buff, effect = new stack
+  let refresh = 'refreshduration' in buff ? buff.refreshduration : true; //buff = original buff, effect = new stack
   if (refresh) {
     buff.timeLeft = $.isArray(buff.duration) ? Math.floor(buff.duration[buff.level - 1] * 30) : Math.floor(buff.duration * 30);
   }
 
   $.each(target.battle.passives.filter(passive => 'hasStacks' == passive.trigger), (index, passiveskill) => {
-    var b = target.battle.buffs.find(buf => buf.name == passiveskill.name);
+    let b = target.battle.buffs.find(buf => buf.name == passiveskill.name);
     if (b != undefined) {
       let stacksNeeded = $.isArray(passiveskill.stacksRequired) ? passiveskill.stacksRequired[passiveskill.level - 1] : passiveskill.stacksRequired;
       if ('stackChance' in b) {
-        var expectedstacks = $.isArray(b.stackChance) ? b.stacks * b.stackChance[b.level - 1] / 100 : b.stacks * b.stackChance / 100;
+        let expectedstacks = $.isArray(b.stackChance) ? b.stacks * b.stackChance[b.level - 1] / 100 : b.stacks * b.stackChance / 100;
         if (expectedstacks >= stacksNeeded) {
           triggerPassive('hasStacks', target, enemy);
         }
@@ -4086,11 +4090,11 @@ function addStack(target, effect, enemy) {
 
   //notstacksrequired passive
   $.each(target.battle.passives.filter(passive => 'notHasStacks' == passive.trigger), (index, passiveskill) => {
-    var b = target.battle.buffs.find(buf => buf.name == passiveskill.name);
+    let b = target.battle.buffs.find(buf => buf.name == passiveskill.name);
     if (b != undefined) {
       let stacksNeeded = $.isArray(passiveskill.stacksRequired) ? passiveskill.stacksRequired[passiveskill.level - 1] : passiveskill.stacksRequired;
       if ('stackChance' in b) {
-        var expectedstacks = $.isArray(b.stackChance) ? b.stacks * b.stackChance[b.level - 1] / 100 : b.stacks * b.stackChance / 100;
+        let expectedstacks = $.isArray(b.stackChance) ? b.stacks * b.stackChance[b.level - 1] / 100 : b.stacks * b.stackChance / 100;
         if (expectedstacks <= stacksNeeded) {
           triggerPassive('notHasStacks', target, enemy);
         }
@@ -4102,7 +4106,7 @@ function addStack(target, effect, enemy) {
 }
 
 function addPassive(doll, passive, enemy, currentTime) {
-  var passiveskill = $.extend(true, {}, passive);
+  let passiveskill = $.extend(true, {}, passive);
 
   if (!('level' in passiveskill)) {
     passiveskill.level = doll.skilllevel;
@@ -4124,7 +4128,7 @@ function addPassive(doll, passive, enemy, currentTime) {
 }
 
 function removeBuff(doll, buff, enemy) {
-  var targets = getBuffTargets(doll, buff, enemy);
+  let targets = getBuffTargets(doll, buff, enemy);
 
   $.each(targets, (index, target) => {
     target.battle.buffs = target.battle.buffs.filter(b => {
@@ -4138,7 +4142,7 @@ function removeBuff(doll, buff, enemy) {
 }
 
 function removePassive(doll, passive, enemy) {
-  var targets = getBuffTargets(doll, passive, enemy);
+  let targets = getBuffTargets(doll, passive, enemy);
 
   $.each(targets, (index, target) => {
     target.battle.passives = target.battle.passives.filter(p => p.name != passive.name);
@@ -4150,7 +4154,7 @@ function modifySkill(doll, effect, enemy, currentTime) {
     //ballista
     if (effect.modifySkill == 'addMark') {
       doll.battle.skill.marks++;
-      var activeBuff = doll.battle.buffs.find(buff => buff.name == 'normalAttackBuff');
+      let activeBuff = doll.battle.buffs.find(buff => buff.name == 'normalAttackBuff');
       if (activeBuff !== undefined) {
         activeBuff.attacksLeft++;
       }
@@ -4179,9 +4183,9 @@ function modifySkill(doll, effect, enemy, currentTime) {
   if (doll.id == 261) {
     //star mod3
     if (effect.modifySkill == 'checkAvenger') {
-      var buffExists = enemy.battle.buffs.find(b => b.name == 'avenger');
+      let buffExists = enemy.battle.buffs.find(b => b.name == 'avenger');
       if (buffExists) {
-        var buff = doll.battle.buffs.find(b => b.name == 'normalAttackBuff');
+        let buff = doll.battle.buffs.find(b => b.name == 'normalAttackBuff');
         buff.multiplier = [1.1, 1.12, 1.12, 1.14, 1.14, 1.16, 1.16, 1.18, 1.18, 1.2];
       }
     }
@@ -4190,9 +4194,9 @@ function modifySkill(doll, effect, enemy, currentTime) {
   if (doll.id == 260) {
     //sop mod3
     if (effect.modifySkill == 'checkAvenger') {
-      var buffExists = enemy.battle.buffs.find(b => b.name == 'avenger');
+      let buffExists = enemy.battle.buffs.find(b => b.name == 'avenger');
       if (buffExists) {
-        var skill2bonus = [0.15, 0.16, 0.17, 0.18, 0.19, 0.21, 0.22, 0.23, 0.24, 0.25];
+        let skill2bonus = [0.15, 0.16, 0.17, 0.18, 0.19, 0.21, 0.22, 0.23, 0.24, 0.25];
         $.each(doll.battle.effect_queue, (index, effect) => {
           if (effect.type == 'grenade') {
             effect.multiplier += skill2bonus[doll.skill2level - 1];
@@ -4205,17 +4209,17 @@ function modifySkill(doll, effect, enemy, currentTime) {
   if (doll.id == 257) {
     //sv98 mod3
     if (effect.modifySkill == 'checkBuff') {
-      var buff = doll.battle.buffs.find(b => b.name == 'sv98mod');
+      let buff = doll.battle.buffs.find(b => b.name == 'sv98mod');
       if (buff !== undefined) {
-        var damagebonus = [10, 11, 12, 13, 14, 14, 15, 16, 17, 18];
-        var chargedshot = doll.battle.action_queue.find(action => action.name == 'sv98modshot');
+        let damagebonus = [10, 11, 12, 13, 14, 14, 15, 16, 17, 18];
+        let chargedshot = doll.battle.action_queue.find(action => action.name == 'sv98modshot');
         if (chargedshot !== undefined) {
           chargedshot.skillDamageBonus = damagebonus[doll.skill2level - 1];
         }
       }
     }
     if (effect.modifySkill == 'resetTimer') {
-      var passive = doll.battle.passives.find(p => p.name == 'sv98modpassive');
+      let passive = doll.battle.passives.find(p => p.name == 'sv98modpassive');
       passive.startTime = currentTime;
     }
   }
@@ -4223,17 +4227,17 @@ function modifySkill(doll, effect, enemy, currentTime) {
   if (doll.id == 189) {
     //k2
     if (effect.modifySkill == 'changeHeatStats') {
-      var heatbuff = doll.battle.buffs.find(b => b.name == 'heat');
+      let heatbuff = doll.battle.buffs.find(b => b.name == 'heat');
       heatbuff.stat.fp = [-3.2, -3.1, -3, -2.8, -2.7, -2.6, -2.4, -2.3, -2.2, -2];
       heatbuff.stat.acc = [-3.2, -3.1, -3, -2.8, -2.7, -2.6, -2.4, -2.3, -2.2, -2];
     }
     if (effect.modifySkill == 'changeHeatStatsDown') {
-      var heatbuff = doll.battle.buffs.find(b => b.name == 'heat');
+      let heatbuff = doll.battle.buffs.find(b => b.name == 'heat');
       heatbuff.stat.fp = 0;
       heatbuff.stat.acc = 0;
     }
     if (effect.modifySkill == 'singleEnemyAttackStack') {
-      var singleTargetBuff = doll.battle.buffs.find(b => 'attacksOnSingle' in b);
+      let singleTargetBuff = doll.battle.buffs.find(b => 'attacksOnSingle' in b);
       if (singleTargetBuff !== undefined) {
         singleTargetBuff.attacksOnSingle++;
         if (singleTargetBuff.attacksOnSingle > 10) {
@@ -4245,23 +4249,23 @@ function modifySkill(doll, effect, enemy, currentTime) {
     if (effect.modifySkill == 'switchMode') {
       if (doll.skill.mode == 'fever') {
         //switch to note
-        var normalpassive = doll.battle.passives.find(p => p.trigger == 'normalAttack');
+        let normalpassive = doll.battle.passives.find(p => p.trigger == 'normalAttack');
         normalpassive.effects[0].stacksToAdd = -1;
         doll.battle.buffs = doll.battle.buffs.filter(b => b.name != 'normalAttackBuff');
-        var sittingbuff = {
-          type: "buff",
-          target: "self",
+        let sittingbuff = {
+          type: 'buff',
+          target: 'self',
           stat: {
             eva: [-60, -58, -56, -54, -52, -50, -48, -46, -44, -40]
           },
           level: doll.skilllevel,
           duration: -1,
-          name: "sitting"
+          name: 'sitting'
         };
-        var singleTargetBuff = {
-          type: "buff",
-          target: "self",
-          name: "normalAttackBuff",
+        let singleTargetBuff = {
+          type: 'buff',
+          target: 'self',
+          name: 'normalAttackBuff',
           attacksOnSingle: 0,
           multiplier: 1,
           duration: -1,
@@ -4272,14 +4276,14 @@ function modifySkill(doll, effect, enemy, currentTime) {
         doll.skill.mode = 'note';
       } else {
         //switch to fever
-        var normalpassive = doll.battle.passives.find(p => p.trigger == 'normalAttack');
+        let normalpassive = doll.battle.passives.find(p => p.trigger == 'normalAttack');
         normalpassive.effects[0].stacksToAdd = 1;
         doll.battle.buffs = doll.battle.buffs.filter(b => b.name != 'sitting');
         doll.battle.buffs = doll.battle.buffs.filter(b => 'attacksOnSingle' in b);
-        var feverbuff = {
-          type: "buff",
-          target: "self",
-          name: "normalAttackBuff",
+        let feverbuff = {
+          type: 'buff',
+          target: 'self',
+          name: 'normalAttackBuff',
           hitCount: 3,
           multiplier: [0.4, 0.412, 0.424, 0.436, 0.448, 0.46, 0.472, 0.484, 0.496, 0.52],
           duration: -1,
@@ -4293,21 +4297,21 @@ function modifySkill(doll, effect, enemy, currentTime) {
 
   if (doll.id == 278) {
     //m200
-    if (effect.modifySkill == "resetShotCount") {
+    if (effect.modifySkill == 'resetShotCount') {
       doll.battle.skill.numShots = 0;
     }
-    if (effect.modifySkill == "addChargedShot") {
+    if (effect.modifySkill == 'addChargedShot') {
       doll.battle.skill.numShots++;
-      var hasSniperMode = doll.battle.buffs.find(b => b.name == 'm200') !== undefined ? true : false;
+      let hasSniperMode = doll.battle.buffs.find(b => b.name == 'm200') !== undefined ? true : false;
       if (hasSniperMode) {
-        var chargedshot = {
-          type: "chargedshot",
+        let chargedshot = {
+          type: 'chargedshot',
           delay: [2.5, 2.4, 2.3, 2.2, 2.1, 1.9, 1.8, 1.7, 1.6, 1.5],
           busylinks: 5,
           canCrit: true,
           ignoreArmor: false,
           multiplier: [1.5, 1.56, 1.61, 1.67, 1.72, 1.78, 1.83, 1.89, 1.94, 2],
-          modifySkill: "addChargedShot",
+          modifySkill: 'addChargedShot',
           level: doll.skilllevel
         };
 
@@ -4337,12 +4341,12 @@ function modifySkill(doll, effect, enemy, currentTime) {
     }
 
     if (effect.modifySkill == 'useSpecialAmmo') {
-      var ammoBuff = doll.battle.buffs.find(b => b.name == 'falcon');
+      let ammoBuff = doll.battle.buffs.find(b => b.name == 'falcon');
       if (ammoBuff !== undefined) {
         if (ammoBuff.stacks > 0) {
           ammoBuff.stacks--;
-          var chargedshot = {
-            type: "chargedshot",
+          let chargedshot = {
+            type: 'chargedshot',
             delay: [2, 2, 2, 2, 2, 2, 2, 2, 2, 2],
             busylinks: 5,
             canCrit: true,
@@ -4364,15 +4368,15 @@ function modifySkill(doll, effect, enemy, currentTime) {
   //chauchat
   if (doll.id == 282) {
     if (effect.modifySkill == 'consumeStack') {
-      var buff = doll.battle.buffs.find(b => b.name == 'chauchat');
+      let buff = doll.battle.buffs.find(b => b.name == 'chauchat');
       if (buff == undefined) {
         return;
       }
 
-      var reloadBuff = {
-        type: "buff",
-        target: "self",
-        name: "reloadBuff",
+      let reloadBuff = {
+        type: 'buff',
+        target: 'self',
+        name: 'reloadBuff',
         duration: -1,
         uses: 1,
         stackable: true,
@@ -4426,7 +4430,7 @@ function modifySkill(doll, effect, enemy, currentTime) {
       let dorothy = echelon.find(d => d.id == 297);
       if (dorothy !== undefined) {
         dorothy.battle.skill.effects[0].after[1].stat.eva = dorothy.battle.skill.effects[0].after[1].stat.eva.map(x => x / 2);
-        dorothy.battle.skill.effects[1].after[1].stat.acc = dorothy.battle.skill.effects[0].after[1].stat.acc.map(x => x / 2)
+        dorothy.battle.skill.effects[1].after[1].stat.acc = dorothy.battle.skill.effects[0].after[1].stat.acc.map(x => x / 2);
       }
     }
 
@@ -4454,14 +4458,14 @@ function modifySkill(doll, effect, enemy, currentTime) {
 }
 
 function getUsableSkillEffects(effects) {
-  var validEffects = [];
+  let validEffects = [];
 
-  for (var i = 0; i < effects.length; i++) {
+  for (let i = 0; i < effects.length; i++) {
     if (!('requirements' in effects[i])) {
       validEffects.push($.extend({}, effects[i]));
       continue;
     }
-    var valid = true;
+    let valid = true;
     $.each(effects[i].requirements, (condition, value) => {
       if (condition == 'night') {
         valid = valid && (isNight == value);
@@ -4483,15 +4487,15 @@ function getUsableSkillEffects(effects) {
 
 let getFrames = function (originalRoF) {
   let frames = 1500 / originalRoF;
-  frames = Number.isInteger(frames) ? frames - 1 : Math.floor(frames)
+  frames = Number.isInteger(frames) ? frames - 1 : Math.floor(frames);
   return frames;
-}
+};
 
 let getEffectiveRoF = function (originalRoF) {
-  let frames = getFrames(originalRoF)
-  let effectiveRoF = Math.ceil(1500 / (frames + 1))
+  let frames = getFrames(originalRoF);
+  let effectiveRoF = Math.ceil(1500 / (frames + 1));
   return effectiveRoF;
-}
+};
 
 let getCapRoF = function (doll, originalRoF) {
   let capBasedOnType;
@@ -4504,16 +4508,16 @@ let getCapRoF = function (doll, originalRoF) {
     // doll.battle.rof_waste = Math.max(0, doll.battle.rof - cap)
     // console.log(`${doll.battle.rof} ; ${doll.battle.maxstats.rof} ; ${doll.battle.rof_waste} ; ${doll.battle.maxstats.rof_waste}`)
   }
-  let cap = Math.min(getEffectiveRoF(capBasedOnType), getEffectiveRoF(originalRoF))
+  let cap = Math.min(getEffectiveRoF(capBasedOnType), getEffectiveRoF(originalRoF));
   return Math.min(cap, Math.max(15, originalRoF));
-}
+};
 
 function determineFinalStats() {
   //this whole mechanism of determining which numbers to show the user if they have enabled showBuffedStats
   //needs to be redone.
 
-  for (var i = 0; i < 5; i++) {
-    var doll = echelon[i];
+  for (let i = 0; i < 5; i++) {
+    let doll = echelon[i];
     if (doll.id == -1) continue;
 
     doll.battle.finalstats = {};
@@ -4554,15 +4558,15 @@ const SKILL_CONTROL = {
     //UMP40
     doll.skill = $.extend(true, {}, dollData[doll.id - 1].skill);
 
-    var icd = Math.max(1, parseInt($('.ump40-icd').val()) || 0);
+    let icd = Math.max(1, parseInt($('.ump40-icd').val()) || 0);
     doll.skill.icd = icd;
   },
   159: function (doll) {
     //FP-6
     doll.skill = $.extend(true, {}, dollData[doll.id - 1].skill);
 
-    var target1 = parseInt($('#skill-control-body .shield1 input:checked').val());
-    var target2 = parseInt($('#skill-control-body .shield2 input:checked').val());
+    let target1 = parseInt($('#skill-control-body .shield1 input:checked').val());
+    let target2 = parseInt($('#skill-control-body .shield2 input:checked').val());
 
     doll.skill.effects[0].target = 'doll';
     doll.skill.effects[1].target = 'doll';
@@ -4574,12 +4578,12 @@ const SKILL_CONTROL = {
     //Contender
     doll.skill = $.extend(true, {}, dollData[doll.id - 1].skill);
 
-    var icd = Math.max(6, parseInt($('.contender-icd').val()) || 0);
+    let icd = Math.max(6, parseInt($('.contender-icd').val()) || 0);
     doll.skill.icd = icd;
   },
   197: function (doll) {
     //thunder
-    var miss = $('.thunder-skill').prop('checked');
+    let miss = $('.thunder-skill').prop('checked');
     if (miss) {
       doll.skill.effects[0].delay = 3;
     } else {
@@ -4588,11 +4592,11 @@ const SKILL_CONTROL = {
   },
   209: function (doll) {
     //mdr
-    var dollInFront = $('.mdr-skill').prop('checked');
+    let dollInFront = $('.mdr-skill').prop('checked');
     if (dollInFront) {
       doll.skill.effects[0] = {
-        type: "buff",
-        target: "front",
+        type: 'buff',
+        target: 'front',
         stat: {
           eva: [40, 44, 49, 53, 58, 62, 67, 71, 76, 80]
         },
@@ -4600,8 +4604,8 @@ const SKILL_CONTROL = {
       };
     } else {
       doll.skill.effects[0] = {
-        type: "buff",
-        target: "self",
+        type: 'buff',
+        target: 'self',
         stat: {
           fp: [20, 23, 26, 28, 31, 34, 37, 39, 42, 45],
           rof: [10, 11, 13, 14, 15, 17, 18, 19, 21, 22]
@@ -4612,11 +4616,11 @@ const SKILL_CONTROL = {
   },
   221: function (doll) {
     //type100
-    var shieldNoBreak = $('.t100-skill').prop('checked');
+    let shieldNoBreak = $('.t100-skill').prop('checked');
     if (shieldNoBreak) {
       doll.skill.effects[0] = {
-        type: "buff",
-        target: "self",
+        type: 'buff',
+        target: 'self',
         stat: {
           fp: [40, 45, 50, 55, 60, 65, 70, 75, 80, 85]
         },
@@ -4624,8 +4628,8 @@ const SKILL_CONTROL = {
       };
     } else {
       doll.skill.effects[0] = {
-        type: "buff",
-        target: "self",
+        type: 'buff',
+        target: 'self',
         stat: {
           eva: [30, 34, 38, 42, 46, 49, 53, 57, 61, 65]
         },
@@ -4635,13 +4639,13 @@ const SKILL_CONTROL = {
   },
   224: function (doll) {
     //m82a1
-    var victories = parseInt($('.m82a1-skill').val()) || 0;
+    let victories = parseInt($('.m82a1-skill').val()) || 0;
     doll.skill.effects[0].victories = victories;
     doll.skill.effects[0].skillDamageBonus = [5, 6, 6, 7, 7, 8, 8, 9, 9, 10];
   },
   262: function (doll) {
     //g3mod
-    var morethanhalfhp = $('.g3mod-skill').prop('checked');
+    let morethanhalfhp = $('.g3mod-skill').prop('checked');
     if (morethanhalfhp) {
       doll.skill.buffednade = false;
     } else {
@@ -4651,15 +4655,15 @@ const SKILL_CONTROL = {
   276: function (doll) {
     //hs2000
     doll.skill.effects = [];
-    for (var i = 0; i < 5; i++) {
+    for (let i = 0; i < 5; i++) {
       if (echelon[i].id == -1) {
         continue;
       }
-      var giveBuff = $('.dollindex' + i).prop('checked');
+      let giveBuff = $('.dollindex' + i).prop('checked');
       if (giveBuff) {
-        var buff = {
-          type: "buff",
-          target: "doll",
+        let buff = {
+          type: 'buff',
+          target: 'doll',
           dollid: echelon[i].id,
           stat: {
             fp: [18, 20, 22, 24, 26, 27, 29, 31, 33, 35],
@@ -4673,16 +4677,16 @@ const SKILL_CONTROL = {
   },
   228: function (doll) {
     //spr a3g
-    var targetdies = $('.spra3g-skill').prop('checked');
+    let targetdies = $('.spra3g-skill').prop('checked');
     if (targetdies) {
       doll.skill.effects[0] = {
-        type: "chargedshot",
+        type: 'chargedshot',
         delay: 1.5,
         multiplier: [2.8, 3.1, 3.4, 3.7, 4, 4.3, 4.6, 4.9, 5.2, 5.5],
         busylinks: 5,
         after: {
-          type: "buff",
-          target: "self",
+          type: 'buff',
+          target: 'self',
           stat: {
             rof: [15, 16, 17, 18, 19, 21, 22, 23, 24, 25]
           },
@@ -4691,7 +4695,7 @@ const SKILL_CONTROL = {
       };
     } else {
       doll.skill.effects[0] = {
-        type: "chargedshot",
+        type: 'chargedshot',
         delay: 1.5,
         multiplier: [2.8, 3.1, 3.4, 3.7, 4, 4.3, 4.6, 4.9, 5.2, 5.5],
         busylinks: 5
@@ -4700,11 +4704,11 @@ const SKILL_CONTROL = {
   },
   235: function (doll) {
     //Howa
-    var shield = $('.howa-skill').prop('checked');
+    let shield = $('.howa-skill').prop('checked');
     if (shield) {
       doll.skill.effects[0] = {
-        type: "buff",
-        target: "self",
+        type: 'buff',
+        target: 'self',
         stat: {
           fp: [40, 46, 51, 57, 62, 68, 73, 79, 84, 90]
         },
@@ -4712,15 +4716,15 @@ const SKILL_CONTROL = {
       };
     } else {
       doll.skill.effects[0] = {
-        type: "buff",
-        target: "self",
+        type: 'buff',
+        target: 'self',
         stat: {
           fp: [40, 46, 51, 57, 62, 68, 73, 79, 84, 90]
         },
         duration: 3,
         after: {
-          type: "buff",
-          target: "selfandtiles",
+          type: 'buff',
+          target: 'selfandtiles',
           stat: {
             fp: [25, 28, 32, 35, 38, 42, 45, 48, 52, 55]
           },
@@ -4732,23 +4736,23 @@ const SKILL_CONTROL = {
   259: function (doll) {
     //m4a1 mod3
     doll.skill = $.extend(true, {}, dollData[doll.id - 1].skill);
-    var lessthan3 = $('.m4mod3-skill').prop('checked');
+    let lessthan3 = $('.m4mod3-skill').prop('checked');
     if (lessthan3) {
-      doll.skill.effects[1].target = "self";
-      doll.skill.effects[2].target = "self";
-      doll.skill.effects[3].target = "enemy";
+      doll.skill.effects[1].target = 'self';
+      doll.skill.effects[2].target = 'self';
+      doll.skill.effects[3].target = 'enemy';
     }
   },
   256: function (doll) {
     //mosin-nagant mod3
-    var skill1kill = $('.mosinmod3-skill1').prop('checked');
-    var hitsperkill = Math.max(0, parseInt($('.mosinmod3-skill2').val()) || 0);
+    let skill1kill = $('.mosinmod3-skill1').prop('checked');
+    let hitsperkill = Math.max(0, parseInt($('.mosinmod3-skill2').val()) || 0);
 
     doll.skill = $.extend(true, {}, dollData[doll.id - 1].skill);
     if (skill1kill) {
-      doll.skill.effects[0].after.target = "self";
+      doll.skill.effects[0].after.target = 'self';
     } else {
-      doll.skill.effects[0].after.target = "none";
+      doll.skill.effects[0].after.target = 'none';
     }
 
     if (hitsperkill == 0) {
@@ -4760,8 +4764,8 @@ const SKILL_CONTROL = {
   208: function (doll) {
     //c-ms
     doll.skill = $.extend(true, {}, dollData[doll.id - 1].skill);
-    var toDamage = Math.max(0, parseInt($('.cms-skill').val()) || 0);
-    var toAcc = Math.max(0, parseInt($('.cms-skill2').val()) || 0);
+    let toDamage = Math.max(0, parseInt($('.cms-skill').val()) || 0);
+    let toAcc = Math.max(0, parseInt($('.cms-skill2').val()) || 0);
     if (toDamage == 0) {
       return;
     } else {
@@ -4778,10 +4782,10 @@ const SKILL_CONTROL = {
   272: function (doll) {
     //x95
     doll.skill = $.extend(true, {}, dollData[doll.id - 1].skill);
-    var missinghp = parseInt($('.x95-skill').val()) || 0;
+    let missinghp = parseInt($('.x95-skill').val()) || 0;
     missinghp = Math.max(0, missinghp);
     missinghp = Math.min(99, missinghp);
-    var skillmodifier = [1.2, 1.4, 1.6, 1.8, 2, 2.2, 2.4, 2.6, 2.8, 3];
+    let skillmodifier = [1.2, 1.4, 1.6, 1.8, 2, 2.2, 2.4, 2.6, 2.8, 3];
 
     doll.skill.effects[0].multiplier = missinghp * skillmodifier[doll.skilllevel - 1] / 100;
   }
@@ -4790,14 +4794,14 @@ const SKILL_CONTROL = {
 const SKILL_CONTROL_HTML = {
   97: function (doll) {
     //ump40
-    var value = doll.skill.icd;
-    return "Enter when UMP40's skill should be activated (in seconds), then hit apply<br><input class=\"ump40-icd\" type=\"number\" value=\"" + value + "\"><br>Minimum is 1 second due to the initial cooldown. There is no maximum."
+    let value = doll.skill.icd;
+    return 'Enter when UMP40\'s skill should be activated (in seconds), then hit apply<br><input class="ump40-icd" type="number" value="' + value + '"><br>Minimum is 1 second due to the initial cooldown. There is no maximum.';
   },
   159: function (doll) {
     //FP-6
-    var htmlstring = "Select the dolls that should receive the two shields/damage buffs from FP-6 then hit apply. (Her skill targets only the dolls in her column but since you can move everyone around in battle, you can pick any doll to receive the buff in this simulator)<br>";
+    let htmlstring = 'Select the dolls that should receive the two shields/damage buffs from FP-6 then hit apply. (Her skill targets only the dolls in her column but since you can move everyone around in battle, you can pick any doll to receive the buff in this simulator)<br>';
     htmlstring += 'Shield 1:<div class="shield1">';
-    for (var i = 0; i < 5; i++) {
+    for (let i = 0; i < 5; i++) {
       if (echelon[i].id == -1) continue;
       htmlstring += '<input type="radio" name="shield1" value="' + echelon[i].id;
       if (echelon[i] == doll)
@@ -4805,8 +4809,8 @@ const SKILL_CONTROL_HTML = {
       else
         htmlstring += '">' + echelon[i].name + '</input><br>';
     }
-    htmlstring += '</div><br>Shield 2:<div class="shield2">'
-    for (i = 0; i < 5; i++) {
+    htmlstring += '</div><br>Shield 2:<div class="shield2">';
+    for (let i = 0; i < 5; i++) {
       if (echelon[i].id == -1) continue;
       htmlstring += '<input type="radio" name="shield2" value="' + echelon[i].id;
       if (echelon[i] == doll)
@@ -4814,19 +4818,19 @@ const SKILL_CONTROL_HTML = {
       else
         htmlstring += '">' + echelon[i].name + '</input><br>';
     }
-    htmlstring += '</div>'
+    htmlstring += '</div>';
 
     return htmlstring;
   },
   178: function (doll) {
     //Contender
-    var value = doll.skill.icd;
-    return "Enter when Contender's skill should be activated (in seconds, before skill cooldown tile effects are applied), then hit apply. Remember that there is a 1 second aiming time.<br><input class=\"contender-icd\" type=\"number\" value=\"" + value + "\"><br>Minimum is 6 seconds due to the initial cooldown. There is no maximum.";
+    let value = doll.skill.icd;
+    return 'Enter when Contender\'s skill should be activated (in seconds, before skill cooldown tile effects are applied), then hit apply. Remember that there is a 1 second aiming time.<br><input class="contender-icd" type="number" value="' + value + '"><br>Minimum is 6 seconds due to the initial cooldown. There is no maximum.';
   },
   197: function (doll) {
     //thunder
-    var checked = doll.skill.effects[0].delay > 1 ? true : false;
-    var htmlstring = "Check the box if you want Thunder's skill to miss the first time, then hit apply.<br><input type=\"checkbox\" class=\"thunder-skill\"";
+    let checked = doll.skill.effects[0].delay > 1 ? true : false;
+    let htmlstring = 'Check the box if you want Thunder\'s skill to miss the first time, then hit apply.<br><input type="checkbox" class="thunder-skill"';
     if (checked) {
       htmlstring += 'checked>Miss</input>';
     } else {
@@ -4836,8 +4840,8 @@ const SKILL_CONTROL_HTML = {
   },
   209: function (doll) {
     //MDR
-    var htmlstring = "<p>Since the effects of MDR's skill depends on whether or not there is a doll in front of her IN BATTLE, check the box if you want the sim to assume there is a doll in front of her (default, provides shield+evasion bonus to that doll) or not (provides firepower+rate of fire buff to MDR), then hit apply</p>";
-    var checked = doll.skill.effects[0].target == 'front' ? true : false;
+    let htmlstring = '<p>Since the effects of MDR\'s skill depends on whether or not there is a doll in front of her IN BATTLE, check the box if you want the sim to assume there is a doll in front of her (default, provides shield+evasion bonus to that doll) or not (provides firepower+rate of fire buff to MDR), then hit apply</p>';
+    let checked = doll.skill.effects[0].target == 'front' ? true : false;
     if (checked) {
       htmlstring += '<br><input type="checkbox" class="mdr-skill" checked>doll in front of mdr</input>';
     } else {
@@ -4847,8 +4851,8 @@ const SKILL_CONTROL_HTML = {
   },
   221: function (doll) {
     //type100
-    var htmlstring = "<p>Uncheck the box if you want the shield to break (evasion buff), check the box if you want the shield to stay (default, damage buff), then hit apply.</p>";
-    var checked = 'fp' in doll.skill.effects[0].stat ? true : false;
+    let htmlstring = '<p>Uncheck the box if you want the shield to break (evasion buff), check the box if you want the shield to stay (default, damage buff), then hit apply.</p>';
+    let checked = 'fp' in doll.skill.effects[0].stat ? true : false;
     if (checked) {
       htmlstring += '<br><input type="checkbox" class="t100-skill" checked>Shield does not break</input>';
     } else {
@@ -4858,9 +4862,9 @@ const SKILL_CONTROL_HTML = {
   },
   224: function (doll) {
     //m82a1
-    var htmlstring = "<p>Each victory in the current mission increases M82A1's skill damage by 10% (up to 3 stacks). Select the number of victories in the current mission, then hit apply.</p><br>";
+    let htmlstring = '<p>Each victory in the current mission increases M82A1\'s skill damage by 10% (up to 3 stacks). Select the number of victories in the current mission, then hit apply.</p><br>';
     htmlstring += 'Number of victories in current mission:<select class="m82a1-skill">';
-    for (var i = 0; i < 4; i++) {
+    for (let i = 0; i < 4; i++) {
       htmlstring += '<option value="' + i + '"';
       if (doll.skill.effects[0].victories == i) {
         htmlstring += 'selected>' + i + '</option>';
@@ -4873,8 +4877,8 @@ const SKILL_CONTROL_HTML = {
   },
   262: function (doll) {
     //g3mod
-    var htmlstring = "<p>Check the box if you want the sim to assume targets have more than 50% hp (stun). Uncheck for less than 50% hp (default, grenade damage increase) then hit apply.</p>"
-    var morethanhalfhp = doll.skill.buffednade ? false : true;
+    let htmlstring = '<p>Check the box if you want the sim to assume targets have more than 50% hp (stun). Uncheck for less than 50% hp (default, grenade damage increase) then hit apply.</p>';
+    let morethanhalfhp = doll.skill.buffednade ? false : true;
     if (!morethanhalfhp) {
       htmlstring += '<br><input type="checkbox" class="g3mod-skill">More than 50% hp</input>';
     } else {
@@ -4884,8 +4888,8 @@ const SKILL_CONTROL_HTML = {
   },
   276: function (doll) {
     //hs2000
-    var htmlstring = '<p>Check the box if you want that doll\'s shield not to break (damage/accuracy buff), uncheck it to break the shield (no buff) then hit apply</p>';
-    for (var i = 0; i < 5; i++) {
+    let htmlstring = '<p>Check the box if you want that doll\'s shield not to break (damage/accuracy buff), uncheck it to break the shield (no buff) then hit apply</p>';
+    for (let i = 0; i < 5; i++) {
       if (echelon[i].id == -1) {
         htmlstring += '<input type="checkbox" class="dollindex' + i + '"hidden></input>';
       } else {
@@ -4896,39 +4900,39 @@ const SKILL_CONTROL_HTML = {
   },
   228: function (doll) {
     //spr a3g
-    var htmlstring = '<p>Check the box if you want the marked target to die while the mark is active (rate of fire buff), uncheck to leave it alive while mark expires (no effect)</p>';
+    let htmlstring = '<p>Check the box if you want the marked target to die while the mark is active (rate of fire buff), uncheck to leave it alive while mark expires (no effect)</p>';
     htmlstring += '<input type="checkbox" class="spra3g-skill">Marked target dies with mark active</input>';
     return htmlstring;
   },
   235: function (doll) {
     //howa
-    var htmlstring = '<p>Check the box if you want to assume more than 2 groups of enemies exist after the buff expires (shields allies on tiles) or uncheck if you want to assume 2 or less enemies remain (damage buff for self/allies on tiles) then hit apply</p>';
+    let htmlstring = '<p>Check the box if you want to assume more than 2 groups of enemies exist after the buff expires (shields allies on tiles) or uncheck if you want to assume 2 or less enemies remain (damage buff for self/allies on tiles) then hit apply</p>';
     htmlstring += '<input type="checkbox" class="howa-skill" checked>More than 2 groups of enemies</input>';
     return htmlstring;
   },
   259: function (doll) {
     //m4a1 mod3
-    var htmlstring = '<p>Check the box to have the sim assume only 3 or less dolls are on the field, uncheck otherwise, then hit apply.</p>';
+    let htmlstring = '<p>Check the box to have the sim assume only 3 or less dolls are on the field, uncheck otherwise, then hit apply.</p>';
     htmlstring += '<input type="checkbox" class="m4mod3-skill">3 or less dolls on field when skill activates</input>';
     return htmlstring;
   },
   256: function (doll) {
     //mosin-nagant mod3
-    var htmlstring = '<p>Make changes then hit apply. Check the box if you want mosin-nagants first skill to kill an enemy (rate of fire buff), uncheck it otherwise. For the second field, enter how often she kills an enemy (provides damage buff). Enter 0 for never (no buff). Example: 1 = every shot kills an enemy, 2 = every other shot kills an enemy, 3 = every 3rd shot, etc etc.</p><br>';
+    let htmlstring = '<p>Make changes then hit apply. Check the box if you want mosin-nagants first skill to kill an enemy (rate of fire buff), uncheck it otherwise. For the second field, enter how often she kills an enemy (provides damage buff). Enter 0 for never (no buff). Example: 1 = every shot kills an enemy, 2 = every other shot kills an enemy, 3 = every 3rd shot, etc etc.</p><br>';
     htmlstring += '<input type="checkbox" class="mosinmod3-skill1">Skill1 kills an enemy</input><br>';
     htmlstring += '<input type="number" value="0" class="mosinmod3-skill2">Number of hits to kill an enemy</input><p></p>';
     return htmlstring;
   },
   208: function (doll) {
     //c-ms
-    var htmlstring = '<p>Enter when you would like to activate the skill and switch effects then hit apply.<br>Enter a value of 0 to not switch to that ammunition. Entering 0 for both means C-MS will stay in evasion mode the entire time. Remember there is a 1s cooldown time every time you switch modes.<br></p><br>';
+    let htmlstring = '<p>Enter when you would like to activate the skill and switch effects then hit apply.<br>Enter a value of 0 to not switch to that ammunition. Entering 0 for both means C-MS will stay in evasion mode the entire time. Remember there is a 1s cooldown time every time you switch modes.<br></p><br>';
     htmlstring += '<input type="number" class="cms-skill">Enter how many seconds into evasion mode you want to switch into damage mode</input><br>';
     htmlstring += '<input type="number" class="cms-skill2">Enter how many seconds into damage mode you want to switch into accuracy mode</input><br><p></p>';
     return htmlstring;
   },
   272: function (doll) {
     //x95
-    var htmlstring = '<p>Enter the percentage of hp missing from the enemy (so if the enemy has 10% hp left, you enter 90 here) then hit apply</p><br>';
+    let htmlstring = '<p>Enter the percentage of hp missing from the enemy (so if the enemy has 10% hp left, you enter 90 here) then hit apply</p><br>';
     htmlstring += '<input type="number" class="x95-skill">% of hp missing from enemy (min: 0, max:99)</input><p></p>';
     return htmlstring;
   }
@@ -4936,7 +4940,7 @@ const SKILL_CONTROL_HTML = {
 
 const FAIRY_SKILL_CONTROL_HTML = {
   19: function () {
-    var htmlstring = 'The effect from the cooking fairy is random in battle, but for simulation purposes you can select which effect you want here<br>';
+    let htmlstring = 'The effect from the cooking fairy is random in battle, but for simulation purposes you can select which effect you want here<br>';
     htmlstring += '<div class="effect"><input type="radio" name="effect" value="1" checked>Damage buff</input><br>';
     htmlstring += '<input type="radio" name="effect" value="2">Rate of fire buff</input><br>';
     htmlstring += '<input type="radio" name="effect" value="3">Accuracy buff</input><br>';
@@ -4950,7 +4954,7 @@ const FAIRY_SKILL_CONTROL = {
   19: function () {
     fairy.skill = $.extend(true, {}, fairyData[fairy.id - 1].skill);
 
-    var bufftype = parseInt($('#skill-control-body .effect input:checked').val());
+    let bufftype = parseInt($('#skill-control-body .effect input:checked').val());
     if (bufftype == 1) {
       fairy.skill.effects[0].stat.fp = [8, 9, 10, 11, 12, 13, 14, 16, 18, 20];
     } else if (bufftype == 2) {
@@ -4968,7 +4972,7 @@ const FAIRY_SKILL_CONTROL = {
 
 
 function getNumLinks(dollIndex) {
-  var level = parseInt($('#doll' + (dollIndex + 1) + ' .doll-level-select').val());
+  let level = parseInt($('#doll' + (dollIndex + 1) + ' .doll-level-select').val());
   if (level >= 90)
     return 5;
   if (level >= 70)
@@ -5014,7 +5018,7 @@ function onDragStart(event) {
 function onDrop(event) {
   event.preventDefault();
   $(event.target).removeClass('bg-primary dragging');
-  var dropSource = event.originalEvent.dataTransfer.getData('text');
+  let dropSource = event.originalEvent.dataTransfer.getData('text');
   if ($('#' + dropSource).is($(event.target))) {
     return;
   }
@@ -5023,15 +5027,15 @@ function onDrop(event) {
 }
 
 function swapGridPositions(sourceSquare, destinationSquare) {
-  var sourceIndex = sourceSquare.attr('data-index');
-  var targetIndex = destinationSquare.attr('data-index');
+  let sourceIndex = sourceSquare.attr('data-index');
+  let targetIndex = destinationSquare.attr('data-index');
 
   if (sourceIndex == -1 && targetIndex == -1) {
     return;
   }
 
   //swap data-index attributes in html elements
-  var temp = sourceSquare.attr('data-index');
+  let temp = sourceSquare.attr('data-index');
   sourceSquare.attr('data-index', destinationSquare.attr('data-index'));
   destinationSquare.attr('data-index', temp);
 
@@ -5054,7 +5058,7 @@ function swapGridPositions(sourceSquare, destinationSquare) {
 function moveDoll(event) {
   if ($(event.target).attr('data-index') == undefined) return;
 
-  var gridSquares = [12, 13, 14, 22, 23, 24, 32, 33, 34];
+  let gridSquares = [12, 13, 14, 22, 23, 24, 32, 33, 34];
 
   if (selectedDoll == undefined) {
     for (let i = 0; i < gridSquares.length; i++) {
@@ -5073,7 +5077,7 @@ function moveDoll(event) {
       selectedDoll = undefined;
       return;
     } else {
-      swapGridPositions(selectedDoll, $(event.target))
+      swapGridPositions(selectedDoll, $(event.target));
       selectedDoll = undefined;
     }
   }
@@ -5090,8 +5094,8 @@ function showDamageGraph() {
       shared: true,
       useHTML: true,
       formatter: function () {
-        var output = '<span style="font-size: 10px">' + this.x + '</span><br/>'; //time
-        var total = 0;
+        let output = '<span style="font-size: 10px">' + this.x + '</span><br/>'; //time
+        let total = 0;
         $.each(this.points, (index, point) => {
           output += '<span style="color:' + point.color + '">\u25CF</span> ' + point.series.name + ': <b>' + point.y + '</b><br/>'; //each doll's total dmg
           total += point.y;
