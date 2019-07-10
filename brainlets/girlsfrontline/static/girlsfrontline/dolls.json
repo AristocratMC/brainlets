@@ -9235,7 +9235,7 @@
     "artist": "sola7764",
     "voice": "Naomi Mukaiyama",
     "name_skill1": "Conceal Command",
-    "icon_name_skill1": "dodgeBuff",
+    "icon_name_skill1": "dodgebuff",
     "tooltip_skill1": "Initial CD: 6s, CD: 12s<br>Increase all allies' accuracy by 55% and evasion by 28% for 8 seconds",
 		"skill": {
 			"icd":6,
