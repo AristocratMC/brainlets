@@ -9763,7 +9763,7 @@
   {
     "id": 143,
     "id_index": 148,
-    "aliases": ["Steyr IWS 2000"],
+    "aliases": ["Steyr Infantry Weapon System 2000"],
     "api_name": "iws2000",
     "spritesheet_row": 23,
     "spritesheet_col": 4,
@@ -20997,7 +20997,7 @@
   {
     "id": 294,
     "id_index": 1020,
-    "aliases": ["Stella Hoshi"],
+    "aliases": ["Stella Hoshii"],
     "api_name": "stella",
     "spritesheet_row": 15,
     "spritesheet_col": 8,
