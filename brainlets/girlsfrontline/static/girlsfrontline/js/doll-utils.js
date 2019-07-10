@@ -305,6 +305,16 @@ export default class dollUtils {
       success: function (data, status, xhr) {
         dollData.push(...data);
 
+        dollData.forEach(doll => {
+          if (doll.construct_time !== null) {
+            doll.construct_time_formatted = `${('00' + Math.floor(doll.construct_time / 3600)).slice(-2)}:${('00' + Math.floor((doll.construct_time % 3600) / 60)).slice(-2)}:00`;
+            doll.construct_time_index = `${('00' + Math.floor(doll.construct_time / 3600)).slice(-2)}${('00' + Math.floor((doll.construct_time % 3600) / 60)).slice(-2)}`;
+          } else {
+            doll.construct_time_formatted = '';
+            doll.construct_time_index = '';
+          }
+        });
+
         // map T-Doll data to dollDataMap
         dollData.reduce(function (map, doll) {
           map[doll.id] = doll;

@@ -355,7 +355,7 @@ function initDollSelectModal() {
       <a href="https://en.gfwiki.com/wiki/${doll.name.replace(' ', '_')}" target="_blank">Wiki</a>
       ${optional_voodoo}
     </p>
-    <hr>
+    ${`<div class="hr-sect">${doll.construct_time_formatted}</div>`}
     <div class="row">
       <div class="col-2 px-1"><div class="float-right">${tilegrid}</div></div>
       <div class="col-10 pl-1 pr-3 text-left small">Affects: ${tileTargetTypes}<br />${doll.tooltip_tiles}</div>
@@ -1309,6 +1309,9 @@ function dollMatchesSearchString(doll, regex) {
     }
   }
   if (regex.test(doll.name_skill1)) {
+    return true;
+  }
+  if (regex.test(doll.construct_time_formatted) || regex.test(doll.construct_time_index)) {
     return true;
   }
   return false;
