@@ -10806,7 +10806,7 @@
     "voice": "Manami Numakura",
     "name_skill1": "Lost Paradise",
     "icon_name_skill1": "shield",
-    "tooltip_skill1": "Deploys two damage reduction shields randomly to any doll in the same column (can apply twice to the same doll) that reduce damage received by 80% while increased that doll's damage by 30% per shield. Shields last 8 seconds",
+    "tooltip_skill1": "Initial CD: 10s, CD: 16s<br>Deploys two damage reduction shields randomly to any doll in the same column (can apply twice to the same doll) that reduce damage received by 80% while increased that doll's damage by 30% per shield. Shields last 8 seconds",
 		"skill": {
 			"icd":10,
 			"cd":[20,19.6,19.1,18.7,18.2,17.8,17.3,16.9,16.4,16],
