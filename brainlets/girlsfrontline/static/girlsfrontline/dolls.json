@@ -21506,7 +21506,7 @@
     "voice": "",
     "name_skill1": "Secret Modification",
     "icon_name_skill1": "dorothy",
-    "tooltip_skill1": "Initial CD: 2s, CD: 1s<br>Activate the skill to switch between MIRD113 and Nano-Camouflage. By default, Dorothy will use Nano-Camouflage if she is in the middle column, MIRD113 otherwise.<br>MIRD113: Increase self damage by 100% and increase evasion by 80% for allies in her column while decreasing their accuracy by 40%. This effect does not trigger Python's passive.<br>Nano-Camouflage: Increase self evasion by 100% and increase accuracy by 80% for allies in her column while decreasing their evasion by 40%. This effect does not trigger Python's passive.<br>Favorite drink: Piano Woman: Reduces the debuffs caused by her skill by 50%",
+    "tooltip_skill1": "Initial CD: 2s, CD: 1s<br>Activate the skill to switch between MIRD113 and Nano-Camouflage. By default, Dorothy will use Nano-Camouflage if she is in the middle row, MIRD113 otherwise.<br>MIRD113: Increase self damage by 100% and increase evasion by 80% for allies in her column while decreasing their accuracy by 40%. This effect does not trigger Python's passive.<br>Nano-Camouflage: Increase self evasion by 100% and increase accuracy by 80% for allies in her column while decreasing their evasion by 40%. This effect does not trigger Python's passive.<br>Favorite drink: Piano Woman: Reduces the debuffs caused by her skill by 50%",
 		"skill": {
 			"icd":1,
 			"cd":[-1,-1,-1,-1,-1,-1,-1,-1,-1,-1],

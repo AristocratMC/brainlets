@@ -2597,7 +2597,7 @@ function preBattleSkillChanges(doll) {
 
   //dorothy
   if (doll.id == 297) {
-    if (doll.pos == 13 || doll.pos == 23 || doll.pos == 33) {
+    if (doll.pos == 22 || doll.pos == 23 || doll.pos == 24) {
       doll.battle.skill.effects[0].delay = 0;
     } else {
       doll.battle.skill.effects[1].delay = 0;
