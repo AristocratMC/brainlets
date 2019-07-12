@@ -360,7 +360,7 @@ function initDollSelectModal() {
       <div class="col-2 px-1"><div class="float-right">${tilegrid}</div></div>
       <div class="col-10 pl-1 pr-3 text-left small">Affects: ${tileTargetTypes}<br />${doll.tooltip_tiles}</div>
     </div>
-    <hr>
+    ${`<div class="hr-sect">Art: ${doll.artist} | Voice:&nbsp;<a href="https://myanimelist.net/search/all?q=${encodeURI(doll.voice)}"> ${doll.voice} </a></div>`}
     <div class="row">
       <div class="col-2 pl-3 px-1"><div class="float-right"><img src="/static/girlsfrontline/sim/dolls/icon/skillicon/${doll.icon_name_skill1 ? doll.icon_name_skill1 : 'letiablebuff'}.png" class="img-fluid" /></div></div>
       <div class="col-10 pl-1 pr-3 text-left small"><b>${doll.name_skill1}</b><br />${doll.tooltip_skill1}</div>
