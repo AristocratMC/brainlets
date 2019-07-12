@@ -262,6 +262,7 @@
     "armor": 0,
     "growth_rating": 142,
     "construct_time": 3180,
+    "uncraftable": true,
     "en_craftable": false,
 		"en_released":false,
     "artist": "REALMBW",
