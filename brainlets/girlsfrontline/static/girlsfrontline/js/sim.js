@@ -383,7 +383,7 @@ function initDollSelectModal() {
       .append(`<svg class="favorite-icon${favorites.has(doll.api_name) ? ' favorited' : ''}" data-api-name=${doll.api_name}><use xlink:href="#star"></svg>`);
 
     // Add tile buff amounts
-    let tileBuffContainer = $('<div>').addClass('aura_container_caption');
+    let tileBuffContainer = $('<div>').addClass('aura_container_caption stroke-1px');
 
     for (let tileEffect in doll.tiles.effect) {
       let tileEffectAmount = typeof doll.tiles.effect[tileEffect] == 'object' ? doll.tiles.effect[tileEffect][1] : doll.tiles.effect[tileEffect];
@@ -1882,7 +1882,7 @@ function updateUIForDoll(index) {
   let tile_bonuses = ['fp', 'acc', 'eva', 'rof', 'crit', 'skillcd', 'armor'];
   for (let i = 0; i < tile_bonuses.length; i++) {
     if (doll.tile_bonus[tile_bonuses[i]] > 0) {
-      $('#pos' + doll.pos + ' .' + tile_bonuses[i] + ' small').text(doll.tile_bonus[tile_bonuses[i]] + '%');
+      $('#pos' + doll.pos + ' .' + tile_bonuses[i] + ' span').text(doll.tile_bonus[tile_bonuses[i]] + '%');
       $('#pos' + doll.pos + ' .' + tile_bonuses[i]).prop('hidden', false);
     } else {
       $('#pos' + doll.pos + ' .' + tile_bonuses[i]).prop('hidden', true);
