@@ -205,10 +205,10 @@ $(function () {
 
 function initEchelon() {
   echelon = [createDummyDoll(12),
-  createDummyDoll(22),
-  createDummyDoll(32),
-  createDummyDoll(13),
-  createDummyDoll(23)];
+    createDummyDoll(22),
+    createDummyDoll(32),
+    createDummyDoll(13),
+    createDummyDoll(23)];
   fairy = createDummyFairy();
 }
 
