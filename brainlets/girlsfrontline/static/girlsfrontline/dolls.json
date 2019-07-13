@@ -4793,8 +4793,8 @@
 		"en_released":true,
     "artist": "spirtie",
     "voice": "Miki Amano",
-    "name_skill1": "",
-    "icon_name_skill1": "",
+    "name_skill1": "Damage Focus",
+    "icon_name_skill1": "powbuffself",
     "tooltip_skill1": "Initial CD: 5s, CD: 8s<br>Increase self damage by 55% for 5 seconds",
 		"skill": {
 			"icd":5,
