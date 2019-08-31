@@ -15892,11 +15892,11 @@
   {
     "id": 231,
     "id_index": 238,
-    "aliases": ["Type 88 Machine Gun"],
+    "aliases": ["Type 88 Machine Gun","QYJ-88"], 
     "api_name": "type88",
     "spritesheet_row": 31,
     "spritesheet_col": 6,
-    "name": "Type 88",
+    "name": "QJY-88",
     "rarity": 5,
     "type": 5,
     "mod": false,
