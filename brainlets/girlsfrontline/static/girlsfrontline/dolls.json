@@ -14495,7 +14495,7 @@
   {
     "id": 208,
     "id_index": 213,
-    "aliases": ["Saab Bofors Dynamics Carl Bertil Johansson - Modular System"],
+    "aliases": ["Saab Bofors Dynamics Carl Bertil Johansson - Modular System", "CMS"],
     "api_name": "cbjms",
     "spritesheet_row": 8,
     "spritesheet_col": 6,
