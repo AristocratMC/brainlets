@@ -4962,7 +4962,7 @@ let getFrames = function (originalRoF) {
 
 let getEffectiveRoF = function (originalRoF) {
   let frames = getFrames(originalRoF);
-  let effectiveRoF = Math.ceil(1500 / Math.ceil(frames + 1));
+  let effectiveRoF = Math.ceil(1500 / (frames + 0.9999));
   return effectiveRoF;
 };
 
