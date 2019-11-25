@@ -15491,7 +15491,7 @@
     "voice": "TBD",
     "name_skill1": "Highway to Hell",
     "icon_name_skill1": "invincible",
-    "tooltip_skill1": "Initial CD: 10s, CD: 16s<br>Gain a shield that negates up to 1000 damage for 6 seconds. Shield HP decays by 100 every second",
+    "tooltip_skill1": "Initial CD: 10s, CD: 16s<br>Grants a shield with a Defense Value [DV] of 1000 points, reducing incoming damage by 10% per 100 DV for 6 seconds. DV decays by 100 points (-10% damage reduction) per second.",
 		"skill": {
 			"icd":10,
 			"cd":[20,19.6,19.1,18.7,18.2,17.8,17.3,16.9,16.4,16],
