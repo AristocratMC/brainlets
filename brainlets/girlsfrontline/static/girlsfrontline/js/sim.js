@@ -3361,8 +3361,8 @@ function simulateBattle() {
               modifySkill(doll, attackBuff, enemy, currentFrame);
             }
           } else {
-
-            dmg = Math.max(shotmultiplier, doll.battle.fp + shotmultiplier * Math.min(2, doll.battle.ap - enemy.battle.armor));
+            let armorPenBonus = enemy.battle.armor == 0 ? 0 : Math.min(2, doll.battle.ap - enemy.battle.armor);
+            dmg = Math.max(shotmultiplier, doll.battle.fp + shotmultiplier * armorPenBonus);
             dmg *= (doll.battle.acc / (doll.battle.acc + enemy.battle.eva));
             dmg *= 1 + (doll.battle.critdmg * (doll.battle.crit / 100) / 100);
             dmg *= enemy.battle.vulnerability;
